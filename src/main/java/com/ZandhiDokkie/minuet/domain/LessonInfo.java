@@ -2,14 +2,14 @@ package com.ZandhiDokkie.minuet.domain;
 
 import java.time.LocalDateTime;
 
-public class LessonsInfo {
+public class LessonInfo {
     private Long id;
     private Long teacherId;
     private Long studentId;
     private LocalDateTime dateTime;
     private boolean completed;
 
-    public LessonsInfo(Long id, Long teacherId, Long studentId, LocalDateTime dateTime, boolean completed){
+    public LessonInfo(Long id, Long teacherId, Long studentId, LocalDateTime dateTime, boolean completed){
         this.id = id;
         this.teacherId = teacherId;
         this.studentId = studentId;

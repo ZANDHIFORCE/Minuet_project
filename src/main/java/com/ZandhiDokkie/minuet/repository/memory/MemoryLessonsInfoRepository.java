@@ -1,4 +1,4 @@
-package com.ZandhiDokkie.minuet.repositroy.memory;
+package com.ZandhiDokkie.minuet.repository.memory;
 
 public class MemoryLessonsInfoRepository {
 }

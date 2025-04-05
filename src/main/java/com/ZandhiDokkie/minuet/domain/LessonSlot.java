@@ -1,16 +1,15 @@
 package com.ZandhiDokkie.minuet.domain;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class Lesson_slot {
+public class LessonSlot {
     private Long id;
     private Long teacherId;
     private Long studentId;
     private Integer day;
     private LocalTime time;
 
-    public Lesson_slot(Long id, Long teacherId, Long studentId, Integer day, LocalTime time){
+    public LessonSlot(Long id, Long teacherId, Long studentId, Integer day, LocalTime time){
         this.id = id;
         this.teacherId =teacherId;
         this.studentId = studentId;
