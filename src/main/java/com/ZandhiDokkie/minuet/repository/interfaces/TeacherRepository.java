@@ -6,10 +6,10 @@ import java.util.Optional;
 
 public interface TeacherRepository {
     Integer getLength();
-    Optional<Teacher> getTeacher();
+    Optional<Teacher> getTeacher(Long teacherId);
     List<Teacher> getTeachers();
-    Optional<Teacher> createTeacher();
-    Optional<Teacher> updateTeacher();
-    void deleteTeacher();
+    Optional<Teacher> createTeacher(Teacher teacher);
+    Optional<Teacher> updateTeacher(Teacher teacher);
+    Optional<Teacher> deleteTeacher(Long teacherID);
     void clearStore();
 }
