@@ -5,6 +5,9 @@ public class Teacher {
     private String name;
     private String subject;
 
+    public Teacher(){
+    }
+
     public Teacher(Long id, String name, String subject){
         this.id = id;
         this.name = name;

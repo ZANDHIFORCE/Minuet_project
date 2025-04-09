@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 public class MemoryTeacherRepositoryTest {
     MemoryTeacherRepository repo;
     Teacher teacher1;
@@ -23,6 +27,28 @@ public class MemoryTeacherRepositoryTest {
         repo.clearStore();
     }
 
+    @Test
+    void saveLoadTest()
+    {
+        //given
+        this.repo.createTeacher(teacher1);
+        this.repo.createTeacher(teacher2);
+        String pathname = "src/test/resources/data/teachers.json";
+        //when
+        repo.saveToFile(pathname);
+        repo.clearStore();
+        repo.loadFromFile(pathname);
+        //then
+        for (Teacher teacher: repo.getTeachers()){
+            if (Objects.equals(teacher.getId(), teacher1.getId())) {
+                Assertions.assertEquals(teacher1.toString(), teacher.toString());
+            }
+            else{
+                Assertions.assertEquals(teacher2.toString(), teacher.toString());
+            }
+        }
+    }
+
     // Implements
     @Test
     void getLengthTest(){
@@ -31,10 +57,74 @@ public class MemoryTeacherRepositoryTest {
     }
 
     @Test
-    void createTeacherTest(){
+    void getTeacherTest(){
+        //given
+        repo.createTeacher(teacher1);
+        //when
+        Optional<Teacher> object = repo.getTeacher(1L);
+        //then
+        object.ifPresent(t->{Assertions.assertEquals(teacher1.toString(), t.toString());});
+    }
+
+    @Test
+    void getTeachersTest(){
+        //given
         repo.createTeacher(teacher1);
         repo.createTeacher(teacher2);
+        //when
+        List<Teacher> teachers = repo.getTeachers();
+        //then
+        for (Teacher teacher: teachers){
+            if (Objects.equals(teacher.getId(), teacher1.getId())) {
+                Assertions.assertEquals(teacher1.toString(), teacher.toString());
+            }
+            else{
+                Assertions.assertEquals(teacher2.toString(), teacher.toString());
+            }
+        }
+    }
+
+    @Test
+    void createTeacherTest(){
+        //when
+        repo.createTeacher(teacher1);
+        repo.createTeacher(teacher2);
+        //then
         Assertions.assertEquals(2,repo.getLength());
+    }
+
+    @Test
+    void updateTeacherTest(){
+        //given
+        repo.createTeacher(teacher1);
+        Teacher teacher = new Teacher(1L, "조동휘", "computer");
+        //when
+        repo.updateTeacher(teacher);
+        //then
+        repo.getTeacher(1L).ifPresent(t -> {
+            Assertions.assertEquals("computer", t.getSubject());
+        });
+    }
+
+    @Test
+    void deleteTeacherTest(){
+        //given
+        repo.createTeacher(teacher1);
+        //when
+        repo.deleteTeacher(1L);
+        //then
+        Assertions.assertEquals(0,repo.getLength());
+    }
+
+    @Test
+    void clearStoreTest(){
+        //given
+        repo.createTeacher(teacher1);
+        repo.createTeacher(teacher2);
+        //when
+        repo.clearStore();
+        //then
+        Assertions.assertEquals(0,repo.getLength());
     }
 
 
