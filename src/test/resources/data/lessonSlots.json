@@ -1,0 +1,13 @@
+[ {
+  "id" : 1,
+  "teacherId" : 1,
+  "studentId" : 2,
+  "day" : 0,
+  "time" : "13:00"
+}, {
+  "id" : 2,
+  "teacherId" : 1,
+  "studentId" : 2,
+  "day" : 2,
+  "time" : "13:00"
+} ]

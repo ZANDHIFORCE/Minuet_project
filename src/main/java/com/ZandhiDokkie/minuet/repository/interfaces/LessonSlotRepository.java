@@ -6,11 +6,11 @@ import java.util.Optional;
 
 public interface LessonSlotRepository {
     Integer getLength();
-    Optional<LessonSlot> getLessonSlot();
+    Optional<LessonSlot> getLessonSlot(Long lessonSlotId);
     List<LessonSlot> getLessonSlots();
-    Optional<LessonSlot> createLessonSlot(LessonSlot teacher);
-    Optional<LessonSlot> updateLessonSlot(LessonSlot teacher);
-    void deleteLessonSlot(Integer lessonSlotId);
+    Optional<LessonSlot> createLessonSlot(LessonSlot lessonSlot);
+    Optional<LessonSlot> updateLessonSlot(LessonSlot lessonSlot);
+    Optional<LessonSlot> deleteLessonSlot(Long lessonSlotId);
     void clearStore();
 
 }

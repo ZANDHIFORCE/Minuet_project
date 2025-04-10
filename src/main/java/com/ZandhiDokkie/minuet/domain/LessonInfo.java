@@ -1,13 +1,19 @@
 package com.ZandhiDokkie.minuet.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public class LessonInfo {
     private Long id;
     private Long teacherId;
     private Long studentId;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm")
     private LocalDateTime dateTime;
     private boolean completed;
+
+    public LessonInfo(){
+    }
 
     public LessonInfo(Long id, Long teacherId, Long studentId, LocalDateTime dateTime, boolean completed){
         this.id = id;

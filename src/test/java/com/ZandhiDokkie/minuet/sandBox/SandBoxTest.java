@@ -10,6 +10,6 @@ public class SandBoxTest {
     @Test
     public void sandBox(){
         HashMap<Long, String> hashMap = new HashMap<>();
-        System.out.println(hashMap.size());
+        System.out.println(hashMap.put(1L,"조동휘"));
     }
 }
