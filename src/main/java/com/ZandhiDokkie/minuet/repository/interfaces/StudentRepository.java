@@ -6,10 +6,10 @@ import java.util.Optional;
 
 public interface StudentRepository {
     Integer getLength();
-    Student getStudent();
+    Optional<Student> getStudent(Long studentId);
     List<Student> getStudents();
-    Optional<Student> createStudent();
-    Optional<Student> updateStudent();
-    void deleteStudent();
+    Optional<Student> createStudent(Student student);
+    Optional<Student> updateStudent(Student student);
+    Optional<Student> deleteStudent(Long studentId);
     void clearStore();
 }

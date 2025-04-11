@@ -6,6 +6,8 @@ public class Student {
     private Integer progressSessions;
     private Integer totalSessions;
 
+    public Student(){}
+
     public Student(Long id, String name, Integer progressSessions, Integer totalSessions){
         this.id = id;
         this.name = name;

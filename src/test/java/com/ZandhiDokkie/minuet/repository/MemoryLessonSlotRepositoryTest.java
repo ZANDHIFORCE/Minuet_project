@@ -1,4 +1,5 @@
 package com.ZandhiDokkie.minuet.repository;
+import com.ZandhiDokkie.minuet.domain.LessonInfo;
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonSlotRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +31,7 @@ public class MemoryLessonSlotRepositoryTest {
     @Test
     void saveLoadTest(){
         //given
-        String pathname = "src/test/resources/data/lessonSlots.json";
+        String pathname = "src/test/resources/data/testLessonSlots.json";
         repo.createLessonSlot(lessonSlot1);
         repo.createLessonSlot(lessonSlot2);
         //when
@@ -43,6 +44,21 @@ public class MemoryLessonSlotRepositoryTest {
                 Assertions.assertEquals(lessonSlot1.toString(), l.toString());
             else
                 Assertions.assertEquals(lessonSlot2.toString(), l.toString());
+        }
+    }
+
+    @Test
+    void realJsonLoadSaveTest(){
+        repo.loadFromFile("src/main/resources/data/lessonSlots.json");
+        List<LessonSlot> LessonSlotList1 = repo.getLessonSlots();
+        repo.saveToFile("src/test/resources/data/lessonSlots.json");
+        repo.clearStore();
+        repo.loadFromFile("src/test/resources/data/lessonSlots.json");
+        for(LessonSlot l1: LessonSlotList1){
+            repo.getLessonSlot(l1.getId())
+                    .ifPresent(l2->{
+                        Assertions.assertEquals(l1.toString(),l2.toString());
+                    });
         }
     }
 

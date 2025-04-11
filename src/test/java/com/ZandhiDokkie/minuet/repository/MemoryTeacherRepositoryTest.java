@@ -1,4 +1,5 @@
 package com.ZandhiDokkie.minuet.repository;
+import com.ZandhiDokkie.minuet.domain.LessonInfo;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryTeacherRepository;
 import com.ZandhiDokkie.minuet.domain.Teacher;
 import org.junit.jupiter.api.AfterEach;
@@ -28,12 +29,11 @@ public class MemoryTeacherRepositoryTest {
     }
 
     @Test
-    void saveLoadTest()
-    {
+    void saveLoadTest() {
         //given
         this.repo.createTeacher(teacher1);
         this.repo.createTeacher(teacher2);
-        String pathname = "src/test/resources/data/teachers.json";
+        String pathname = "src/test/resources/data/testTeachers.json";
         //when
         repo.saveToFile(pathname);
         repo.clearStore();
@@ -46,6 +46,21 @@ public class MemoryTeacherRepositoryTest {
             else{
                 Assertions.assertEquals(teacher2.toString(), teacher.toString());
             }
+        }
+    }
+
+    @Test
+    void realJsonLoadSaveTest(){
+        repo.loadFromFile("src/main/resources/data/teachers.json");
+        List<Teacher> teacherList1 = repo.getTeachers();
+        repo.saveToFile("src/test/resources/data/teachers.json");
+        repo.clearStore();
+        repo.loadFromFile("src/test/resources/data/teachers.json");
+        for(Teacher t1: teacherList1){
+            repo.getTeacher(t1.getId())
+                    .ifPresent(t2->{
+                        Assertions.assertEquals(t1.toString(),t2.toString());
+                    });
         }
     }
 

@@ -1,0 +1,13 @@
+[ {
+  "id" : 1,
+  "teacherId" : 1,
+  "studentId" : 1,
+  "dateTime" : "2025-04-10T13:00",
+  "completed" : false
+}, {
+  "id" : 2,
+  "teacherId" : 2,
+  "studentId" : 2,
+  "dateTime" : "2025-04-10T14:00",
+  "completed" : false
+} ]

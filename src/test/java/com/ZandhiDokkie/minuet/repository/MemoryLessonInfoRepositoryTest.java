@@ -17,7 +17,6 @@ public class MemoryLessonInfoRepositoryTest {
     LessonInfo lessoninfo1;
     LessonInfo lessoninfo2;
 
-
     @BeforeEach
     void beforeEach(){
         repo = new MemoryLessonInfoRepository();
@@ -35,7 +34,7 @@ public class MemoryLessonInfoRepositoryTest {
         //given
         repo.createLessonInfo(lessoninfo1);
         repo.createLessonInfo(lessoninfo2);
-        String pathname = "src/test/resources/data/lessonInfos.json";
+        String pathname = "src/test/resources/data/testLessonInfos.json";
         //when
         repo.saveToFile(pathname);
         repo.clearStore();
@@ -48,6 +47,21 @@ public class MemoryLessonInfoRepositoryTest {
             else{
                 Assertions.assertEquals(lessoninfo2.toString(), lessonInfo.toString());
             }
+        }
+    }
+
+    @Test
+    void realJsonLoadSaveTest(){
+        repo.loadFromFile("src/main/resources/data/lessonInfos.json");
+        List<LessonInfo> LessonInfoList1 = repo.getLessonInfos();
+        repo.saveToFile("src/test/resources/data/lessonInfos.json");
+        repo.clearStore();
+        repo.loadFromFile("src/test/resources/data/lessonInfos.json");
+        for(LessonInfo l1: LessonInfoList1){
+            repo.getLessonInfo(l1.getId())
+                    .ifPresent(l2->{
+                        Assertions.assertEquals(l1.toString(),l2.toString());
+                    });
         }
     }
 
