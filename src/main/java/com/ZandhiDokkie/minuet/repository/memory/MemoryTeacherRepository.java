@@ -3,6 +3,7 @@ import com.ZandhiDokkie.minuet.domain.Teacher;
 import com.ZandhiDokkie.minuet.repository.interfaces.TeacherRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+@Repository
 public class MemoryTeacherRepository implements TeacherRepository{
 
     private final Map<Long, Teacher> teachers = new HashMap<>();

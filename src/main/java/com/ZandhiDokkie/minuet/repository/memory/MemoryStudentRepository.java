@@ -3,15 +3,16 @@ import com.ZandhiDokkie.minuet.domain.Student;
 import com.ZandhiDokkie.minuet.repository.interfaces.StudentRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class MomoryStudentRepository implements StudentRepository {
+@Repository
+public class MemoryStudentRepository implements StudentRepository {
     private  final Map<Long, Student> students = new HashMap<>();
+    private long nextId = 1L;
 
     public void saveToFile(String pathname){
         File file = new File(pathname);
@@ -30,13 +31,25 @@ public class MomoryStudentRepository implements StudentRepository {
         try{
             List<Student> studentList = mapper.readValue(file, new TypeReference<List<Student>>() {
             });
-            for(Student stuent:studentList){
-                this.createStudent(stuent);
+            this.setNextIdFrom(studentList);
+            for(Student student:studentList){
+                students.put(student.getId(), student);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void setNextIdFrom(List<Student> students){
+        long maxId =  students.stream()
+                .mapToLong(Student::getId)
+                .max()
+                .orElse(0L);
+        this.nextId = maxId+1;
+    }
+
+    public long generateNextId(){
+        return this.nextId++;
     }
 
     @Override
@@ -56,8 +69,9 @@ public class MomoryStudentRepository implements StudentRepository {
 
     @Override
     public Optional<Student> createStudent(Student student) {
-        if(students.containsKey(student.getId()))
-            return Optional.empty();
+        if(student.getId() == null){
+            student.setId(generateNextId());
+        }
         students.put(student.getId(), student);
         return Optional.of(student);
     }

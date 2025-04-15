@@ -1,7 +1,7 @@
 package com.ZandhiDokkie.minuet.repository;
 
 import com.ZandhiDokkie.minuet.domain.Student;
-import com.ZandhiDokkie.minuet.repository.memory.MomoryStudentRepository;
+import com.ZandhiDokkie.minuet.repository.memory.MemoryStudentRepository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class MemoryStudentRepositoryTest {
-    MomoryStudentRepository repo;
+    MemoryStudentRepository repo;
     Student student1;
     Student student2;
 
     @BeforeEach
     void beforeEach(){
-        repo = new MomoryStudentRepository();
+        repo = new MemoryStudentRepository();
         student1 = new Student(1L, "조동휘", 1,8);
         student2 = new Student(2L, "송미서", 7,8);
     }
