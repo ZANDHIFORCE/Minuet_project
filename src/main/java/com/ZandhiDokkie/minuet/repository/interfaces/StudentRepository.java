@@ -12,4 +12,5 @@ public interface StudentRepository {
     Optional<Student> updateStudent(Student student);
     Optional<Student> deleteStudent(Long studentId);
     void clearStore();
+    Optional<Student> findByName(String studentName);
 }

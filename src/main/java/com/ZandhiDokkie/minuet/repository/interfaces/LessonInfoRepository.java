@@ -12,4 +12,6 @@ public interface LessonInfoRepository {
     Optional<LessonInfo> updateLessonInfo(LessonInfo lessonInfo);
     Optional<LessonInfo> deleteLessonInfo(Long lessonInfoId);
     void clearStore();
+    List<LessonInfo> findByStudentId(Long studentId);
+    List<LessonInfo> findByTeacherId(Long teacherId);
 }

@@ -12,4 +12,5 @@ public interface TeacherRepository {
     Optional<Teacher> updateTeacher(Teacher teacher);
     Optional<Teacher> deleteTeacher(Long teacherID);
     void clearStore();
+    Optional<Teacher> findByName(String teacherName);
 }

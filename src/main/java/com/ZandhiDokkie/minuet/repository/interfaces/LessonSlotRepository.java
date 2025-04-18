@@ -12,6 +12,9 @@ public interface LessonSlotRepository {
     Optional<LessonSlot> updateLessonSlot(LessonSlot lessonSlot);
     Optional<LessonSlot> deleteLessonSlot(Long lessonSlotId);
     void clearStore();
+    List<LessonSlot> findByStudentId(Long studentId);
+    List<LessonSlot> findByTeacherId(Long teacherId);
+
 
 }
 

@@ -19,8 +19,8 @@ public class MemoryStudentRepositoryTest {
     @BeforeEach
     void beforeEach(){
         repo = new MemoryStudentRepository();
-        student1 = new Student(1L, "조동휘", 1,8);
-        student2 = new Student(2L, "송미서", 7,8);
+        student1 = new Student(null, "조동휘", 1,8);
+        student2 = new Student(null, "송미서", 7,8);
     }
 
     @AfterEach
@@ -78,13 +78,15 @@ public class MemoryStudentRepositoryTest {
     @Test
     void getStudentTest(){
         //given
-        repo.createStudent(student1);
+        long createdId = repo.createStudent(student1).map(Student::getId).orElseThrow(()->new AssertionError("아이디가 null이 반환되었습니다."));
+        student1.setId(createdId);
         //when
-        Optional<Student> studentOptional = repo.getStudent(student1.getId());
+        Optional<Student> studentOptional = repo.getStudent(createdId);
         //then
-        studentOptional.ifPresent(s->{
-            Assertions.assertEquals(student1.toString(), s.toString());
-        });
+        studentOptional.ifPresentOrElse(
+                s-> Assertions.assertEquals(student1.toString(), s.toString()),
+                    ()->Assertions.fail("Null값 반환: createdId의 아이디를 가진 객체가 없습니다.")
+        );
     }
 
     @Test
@@ -104,9 +106,11 @@ public class MemoryStudentRepositoryTest {
 
     @Test
     void createStudentTest(){
-        //given
         //when
-        repo.createStudent(student1);
+        long createdId = repo.createStudent(student1)
+                .map(Student::getId)
+                .orElseThrow(()->new AssertionError("createStudent함수가 null값을 반환했습니다."));
+        student1.setId(createdId);
         //then
         repo.getStudent(student1.getId())
                 .ifPresent(s->{
@@ -117,7 +121,10 @@ public class MemoryStudentRepositoryTest {
     @Test
     void updateStudentTest(){
         //given
-        repo.createStudent(student1);
+        long createdID = repo.createStudent(student1)
+                .map(Student::getId)
+                .orElseThrow(()->new AssertionError("createStudent함수가 null값을 반환했습니다."));
+        student1.setId(createdID);
         student1.setName("조동키");
         //when
         repo.updateStudent(student1);
@@ -131,7 +138,9 @@ public class MemoryStudentRepositoryTest {
     @Test
     void deleteStudentTest(){
         //given
-        repo.createStudent(student1);
+        long createdID = repo.createStudent(student1)
+                .map(Student::getId)
+                .orElseThrow(()->new AssertionError("createStudent함수가 null값을 반환했습니다."));
         //when
         repo.deleteStudent(student1.getId());
         //then
@@ -149,5 +158,16 @@ public class MemoryStudentRepositoryTest {
         Assertions.assertEquals(0,repo.getLength());
     }
 
+    @Test
+    void findByNameTest(){
+        //given
+        repo.createStudent(student1);
+        repo.createStudent(student2);
+        //when
+        repo.findByName(student1.getName())
+                .ifPresent(s->{
+                    Assertions.assertEquals(student1.toString(), s.toString());
+                });
+    }
 
 }

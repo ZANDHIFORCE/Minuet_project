@@ -1,5 +1,4 @@
 package com.ZandhiDokkie.minuet.repository;
-import com.ZandhiDokkie.minuet.domain.LessonInfo;
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonSlotRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,34 +11,34 @@ import java.util.List;
 import java.util.Optional;
 
 public class MemoryLessonSlotRepositoryTest {
-    MemoryLessonSlotRepository repo;
+    MemoryLessonSlotRepository lessonSlotRepository;
     LessonSlot lessonSlot1;
     LessonSlot lessonSlot2;
 
     @BeforeEach
     void beforeEach(){
-        repo = new MemoryLessonSlotRepository();
-        lessonSlot1 = new LessonSlot(1L, 1L, 2L, 0, LocalTime.of(13,00));
-        lessonSlot2 = new LessonSlot(2L, 1L, 2L, 2, LocalTime.of(13,00));
+        lessonSlotRepository = new MemoryLessonSlotRepository();
+        lessonSlot1 = new LessonSlot(null, 1L, 2L, 0, LocalTime.of(13,00));
+        lessonSlot2 = new LessonSlot(null, 1L, 2L, 2, LocalTime.of(13,00));
     }
 
     @AfterEach
     void afterEach(){
-        repo.clearStore();
+        lessonSlotRepository.clearStore();
     }
 
     @Test
     void saveLoadTest(){
         //given
         String pathname = "src/test/resources/data/testLessonSlots.json";
-        repo.createLessonSlot(lessonSlot1);
-        repo.createLessonSlot(lessonSlot2);
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot2);
         //when
-        repo.saveToFile(pathname);
-        repo.clearStore();
-        repo.loadFromFile(pathname);
+        lessonSlotRepository.saveToFile(pathname);
+        lessonSlotRepository.clearStore();
+        lessonSlotRepository.loadFromFile(pathname);
         //then
-        for(LessonSlot l: repo.getLessonSlots()){
+        for(LessonSlot l: lessonSlotRepository.getLessonSlots()){
             if(l.getId().equals(lessonSlot1.getId()))
                 Assertions.assertEquals(lessonSlot1.toString(), l.toString());
             else
@@ -49,13 +48,13 @@ public class MemoryLessonSlotRepositoryTest {
 
     @Test
     void realJsonLoadSaveTest(){
-        repo.loadFromFile("src/main/resources/data/lessonSlots.json");
-        List<LessonSlot> LessonSlotList1 = repo.getLessonSlots();
-        repo.saveToFile("src/test/resources/data/lessonSlots.json");
-        repo.clearStore();
-        repo.loadFromFile("src/test/resources/data/lessonSlots.json");
+        lessonSlotRepository.loadFromFile("src/main/resources/data/lessonSlots.json");
+        List<LessonSlot> LessonSlotList1 = lessonSlotRepository.getLessonSlots();
+        lessonSlotRepository.saveToFile("src/test/resources/data/lessonSlots.json");
+        lessonSlotRepository.clearStore();
+        lessonSlotRepository.loadFromFile("src/test/resources/data/lessonSlots.json");
         for(LessonSlot l1: LessonSlotList1){
-            repo.getLessonSlot(l1.getId())
+            lessonSlotRepository.getLessonSlot(l1.getId())
                     .ifPresent(l2->{
                         Assertions.assertEquals(l1.toString(),l2.toString());
                     });
@@ -65,15 +64,15 @@ public class MemoryLessonSlotRepositoryTest {
     //implementation
     @Test
     void getLengthTest(){
-        Assertions.assertEquals(0, repo.getLength());
+        Assertions.assertEquals(0, lessonSlotRepository.getLength());
     }
 
     @Test
     void getLessonSlotTest(){
         //given
-        repo.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
         //when
-        repo.getLessonSlot(1L)
+        lessonSlotRepository.getLessonSlot(lessonSlot1.getId())
                 .ifPresent(l->{
                     Assertions.assertEquals(lessonSlot1.toString(),l.toString());
                 });
@@ -83,13 +82,13 @@ public class MemoryLessonSlotRepositoryTest {
     @Test
     void getLessonSlotsTest(){
         //given
-        repo.createLessonSlot(lessonSlot1);
-        repo.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
         //when
-        List<LessonSlot> lessonSlotList = repo.getLessonSlots();
+        List<LessonSlot> lessonSlotList = lessonSlotRepository.getLessonSlots();
         //then
         for(LessonSlot l:lessonSlotList){
-            if(l.getId() == lessonSlot1.getId())
+            if(l.getId().equals(lessonSlot1.getId()))
                 Assertions.assertEquals(lessonSlot1.toString(), l.toString());
             else
                 Assertions.assertEquals(lessonSlot1.toString(), l.toString());
@@ -98,49 +97,75 @@ public class MemoryLessonSlotRepositoryTest {
 
     @Test
     void createLessonSlotTest(){
-        //given
         //when
-        repo.createLessonSlot(lessonSlot1);
+        Optional<LessonSlot> lessonSlotOptional = lessonSlotRepository.createLessonSlot(lessonSlot1);
         //then
-        repo.getLessonSlot(1L)
-                .ifPresent(l->{Assertions.assertEquals(lessonSlot1.toString(),l.toString());});
+        lessonSlot1.setId(
+                lessonSlotOptional
+                        .map(LessonSlot::getId)
+                        .orElse(null)
+                );
+        lessonSlotRepository.getLessonSlot(lessonSlot1.getId())
+                .ifPresentOrElse(l->{Assertions.assertEquals(lessonSlot1.toString(), l.toString());},
+                        ()-> {Assertions.fail("해당 아이디를 찾을 수 없습니다.");});
     }
 
     @Test
     void updateLessonSlotTest(){
         //given
-        repo.createLessonSlot(lessonSlot1);
-        Optional<LessonSlot> lessonSlotOptional = repo.getLessonSlot(1L);
+        long lessonSlot1Id = lessonSlotRepository.createLessonSlot(lessonSlot1)
+                .map(LessonSlot::getId)
+                .orElseThrow(()->new AssertionError("아이디에 null값이 반환되었습니다."));
+
+        lessonSlot1.setId(lessonSlot1Id);
+        lessonSlot1.setDay(6);
         //when
-        lessonSlotOptional
-                .ifPresent(l->{
-                    l.setTime(LocalTime.of(15,0));
-                    repo.updateLessonSlot(l);
-                });
+        lessonSlotRepository.updateLessonSlot(lessonSlot1);
         //then
-        repo.getLessonSlot(1L).ifPresent(l->{
-            Assertions.assertEquals(LocalTime.of(15,0) ,l.getTime());
-        });
+        lessonSlotRepository.getLessonSlot(lessonSlot1.getId()).ifPresentOrElse(
+                l->Assertions.assertEquals(lessonSlot1.toString() ,l.toString()),
+                ()->Assertions.fail()
+        );
     }
 
     @Test
     void deleteLessonSlotTest(){
         //given
-        repo.createLessonSlot(lessonSlot1);
+        long createdID = lessonSlotRepository.createLessonSlot(lessonSlot1).map(LessonSlot::getId).orElseThrow(()->new AssertionError("반환된 아이디가 null입니다."));
         //when
-        repo.deleteLessonSlot(lessonSlot1.getId());
+        lessonSlotRepository.deleteLessonSlot(createdID);
         //then
-        Assertions.assertEquals(0,repo.getLength());
+        Assertions.assertEquals(0, lessonSlotRepository.getLength());
     }
 
     @Test
     void clearStoreTest(){
         //given
-        repo.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
         //when
-        repo.clearStore();
+        lessonSlotRepository.clearStore();
         //then
-        Assertions.assertEquals(0,repo.getLength());
+        Assertions.assertEquals(0, lessonSlotRepository.getLength());
+    }
+
+    @Test
+    void findByStudentIdTest(){
+        //given
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        //given
+        List<LessonSlot> lessonSlotList = lessonSlotRepository.findByStudentId(lessonSlot1.getStudentId());
+        //then
+        Assertions.assertEquals(1, lessonSlotList.size());
+    }
+
+    @Test
+    void findByTeacherIdTest(){
+        //given
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        //given
+        List<LessonSlot> lessonSlotList = lessonSlotRepository.findByTeacherId(lessonSlot1.getTeacherId());
+        //then
+        Assertions.assertEquals(1, lessonSlotList.size());
     }
 
 }

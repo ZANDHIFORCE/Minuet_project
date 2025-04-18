@@ -10,10 +10,13 @@ import org.springframework.stereotype.Repository;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class MemoryLessonSlotRepository implements LessonSlotRepository {
     private final Map<Long, LessonSlot> lessonSlots = new HashMap<>();
+    private long nextId = 1L;
+
     public MemoryLessonSlotRepository(){}
 
     public void saveToFile(String pathname){
@@ -38,12 +41,25 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
             this.clearStore();
             List<LessonSlot> lessonSlotList = mapper.readValue(file, new TypeReference<List<LessonSlot>>() {
             });
+            setNextIdFrom(lessonSlotList);
+            clearStore();
             for(LessonSlot l: lessonSlotList){
-                this.createLessonSlot(l);
+                lessonSlots.put(l.getId(), l);
             }
         }catch(IOException e){
            e.printStackTrace();
         }
+    }
+
+    public void setNextIdFrom(List<LessonSlot> lessonsLotList){
+        long maxId = lessonsLotList.stream()
+                .mapToLong(l->l.getId())
+                .max().orElse(0L);
+        nextId = ++maxId;
+    }
+
+    public long generateNextId(){
+        return nextId++;
     }
 
     @Override
@@ -63,8 +79,7 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
 
     @Override
     public Optional<LessonSlot> createLessonSlot(LessonSlot lessonSlot) {
-        if(lessonSlots.containsKey(lessonSlot.getId()))
-            return Optional.empty();
+        lessonSlot.setId(generateNextId());
         lessonSlots.put(lessonSlot.getId(), lessonSlot);
         return Optional.of(lessonSlot);
     }
@@ -85,6 +100,22 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
     @Override
     public void clearStore() {
         lessonSlots.clear();
+        this.nextId = 1L;
     }
+
+    @Override
+    public List<LessonSlot> findByStudentId(Long studentId){
+        return lessonSlots.values().stream()
+                .filter(l->l.getStudentId().equals(studentId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LessonSlot> findByTeacherId(Long teacherId){
+        return lessonSlots.values().stream()
+                .filter(l->l.getTeacherId().equals(teacherId))
+                .collect(Collectors.toList());
+    }
+
 }
 

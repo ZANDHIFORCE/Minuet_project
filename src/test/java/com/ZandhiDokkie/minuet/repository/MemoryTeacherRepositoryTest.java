@@ -19,8 +19,8 @@ public class MemoryTeacherRepositoryTest {
     @BeforeEach
     public void beforeEach(){
         this.repo = new MemoryTeacherRepository();
-        this.teacher1 = new Teacher(1L, "조동휘", "math");
-        this.teacher2 = new Teacher(2L, "송미서", "piano");
+        this.teacher1 = new Teacher(null, "조동휘", "math");
+        this.teacher2 = new Teacher(null, "송미서", "piano");
     }
 
     @AfterEach
@@ -76,7 +76,7 @@ public class MemoryTeacherRepositoryTest {
         //given
         repo.createTeacher(teacher1);
         //when
-        Optional<Teacher> object = repo.getTeacher(1L);
+        Optional<Teacher> object = repo.getTeacher(teacher1.getId());
         //then
         object.ifPresent(t->{Assertions.assertEquals(teacher1.toString(), t.toString());});
     }
@@ -112,11 +112,11 @@ public class MemoryTeacherRepositoryTest {
     void updateTeacherTest(){
         //given
         repo.createTeacher(teacher1);
-        Teacher teacher = new Teacher(1L, "조동휘", "computer");
+        teacher1.setSubject("computer");
         //when
-        repo.updateTeacher(teacher);
+        repo.updateTeacher(teacher1);
         //then
-        repo.getTeacher(1L).ifPresent(t -> {
+        repo.getTeacher(teacher1.getId()).ifPresent(t -> {
             Assertions.assertEquals("computer", t.getSubject());
         });
     }
@@ -126,7 +126,7 @@ public class MemoryTeacherRepositoryTest {
         //given
         repo.createTeacher(teacher1);
         //when
-        repo.deleteTeacher(1L);
+        repo.deleteTeacher(teacher1.getId());
         //then
         Assertions.assertEquals(0,repo.getLength());
     }

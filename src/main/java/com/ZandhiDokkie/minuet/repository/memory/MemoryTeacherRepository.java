@@ -5,22 +5,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 @Repository
 public class MemoryTeacherRepository implements TeacherRepository{
 
     private final Map<Long, Teacher> teachers = new HashMap<>();
+    private long nextId = 1L;
 
     public void loadFromFile(String pathname){
         ObjectMapper mapper = new ObjectMapper();
         File file = new File(pathname);
         try{
             List<Teacher> teacherList = mapper.readValue(file, new TypeReference<List<Teacher>>(){});
+            setNextIdFrom(teacherList);
             teachers.clear();
             for (Teacher teacher: teacherList) {
                 this.teachers.put(teacher.getId(), teacher);
@@ -31,13 +31,7 @@ public class MemoryTeacherRepository implements TeacherRepository{
     }
 
     public void saveToFile() {
-        ObjectMapper mapper = new  ObjectMapper();
-        File file = new File("src/main/resources/data/teachers.json");
-        try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, this.getTeachers());
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        saveToFile("src/main/resources/data/teachers.json");
     }
 
     public void saveToFile(String pathname){
@@ -48,6 +42,18 @@ public class MemoryTeacherRepository implements TeacherRepository{
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+    public void setNextIdFrom(List<Teacher> teacherList){
+        long maxId = teacherList.stream()
+                .mapToLong(t->t.getId())
+                .max()
+                .orElse(0L);
+        nextId = ++maxId;
+    }
+
+
+    public long generateNextId(){
+        return this.nextId++;
     }
 
     // Implements
@@ -68,11 +74,8 @@ public class MemoryTeacherRepository implements TeacherRepository{
 
     @Override
     public Optional<Teacher> createTeacher(Teacher teacher) {
-        Long teacherId = teacher.getId();
-        if (this.teachers.containsKey(teacherId)){
-            return Optional.empty();
-        }
-        this.teachers.put(teacherId,teacher);
+        teacher.setId(generateNextId());
+        teachers.put(teacher.getId(), teacher);
         return Optional.of(teacher);
     }
 
@@ -88,13 +91,28 @@ public class MemoryTeacherRepository implements TeacherRepository{
 
     @Override
     public Optional<Teacher> deleteTeacher(Long teacherID) {
-        Teacher removed = this.teachers.remove(teacherID);
-        return Optional.ofNullable(removed);
+        return Optional.ofNullable(this.teachers.remove(teacherID));
     }
 
     @Override
     public void clearStore() {
         this.teachers.clear();
+        this.nextId = 1L;
+    }
+
+    @Override
+    public Optional<Teacher> findByName(String teacherName) {
+        return teachers.values().stream()
+                .filter(t->t.getName().equals(teacherName))
+                .findFirst();
+
+//        for(Teacher teacher:teachers.values()) {
+//            if(teacherName.equals(teacher.getName())){
+//                return Optional.of(teacher);
+//            }
+//        }
+//        return Optional.empty();
+
     }
 }
 

@@ -92,5 +92,16 @@ public class MemoryStudentRepository implements StudentRepository {
     @Override
     public void clearStore() {
         students.clear();
+        this.nextId = 1L;
+    }
+
+    @Override
+    public Optional<Student> findByName(String studentName) {
+        for(Student student : this.students.values()){
+            if (studentName.equals(student.getName())){
+                return Optional.of(student);
+            }
+        }
+        return Optional.empty();
     }
 }

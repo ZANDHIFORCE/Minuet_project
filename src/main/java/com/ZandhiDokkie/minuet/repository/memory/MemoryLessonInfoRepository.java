@@ -11,10 +11,12 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class MemoryLessonInfoRepository implements LessonInfoRepository {
     private final Map<Long, LessonInfo> lessonInfos = new HashMap<Long, LessonInfo>();
+    private long nextId = 1L;
 
     public MemoryLessonInfoRepository(){}
     public void saveToFile(){
@@ -45,6 +47,7 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
         File file = new File(pathname);
         try{
             List<LessonInfo> lessonInfoList = mapper.readValue(file, new TypeReference<List<LessonInfo>>(){});
+            setNextIdFrom(lessonInfoList);
             this.clearStore();
             for(LessonInfo l:lessonInfoList){
                 lessonInfos.put(l.getId(), l);
@@ -52,6 +55,15 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setNextIdFrom(List<LessonInfo> lessonInfoList){
+        long maxId = lessonInfoList.stream().mapToLong(LessonInfo::getId).max().orElse(0L);
+        nextId = ++maxId;
+    }
+
+    public long generateNextId(){
+        return nextId++;
     }
 
     @Override
@@ -71,10 +83,8 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
 
     @Override
     public Optional<LessonInfo> createLessonInfo(LessonInfo lessonInfo) {
-        if(this.lessonInfos.containsKey(lessonInfo.getId())){
-            return Optional.empty();
-        }
-        this.lessonInfos.put(lessonInfo.getId(),lessonInfo);
+        lessonInfo.setId(generateNextId());
+        lessonInfos.put(lessonInfo.getId(), lessonInfo);
         return Optional.of(lessonInfo);
     }
 
@@ -97,6 +107,20 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
     @Override
     public void clearStore() {
         this.lessonInfos.clear();
+        nextId = 1L;
     }
 
+    @Override
+    public List<LessonInfo> findByStudentId(Long studentId){
+        return lessonInfos.values().stream()
+                .filter(l->l.getStudentId().equals(studentId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LessonInfo> findByTeacherId(Long teacherId){
+        return lessonInfos.values().stream()
+                .filter(l->l.getTeacherId().equals(teacherId))
+                .collect(Collectors.toList());
+    }
 }

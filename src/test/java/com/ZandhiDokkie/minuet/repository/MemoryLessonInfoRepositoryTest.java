@@ -7,58 +7,59 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public class MemoryLessonInfoRepositoryTest {
-    MemoryLessonInfoRepository repo;
-    LessonInfo lessoninfo1;
-    LessonInfo lessoninfo2;
+    MemoryLessonInfoRepository lessonInfoRepository;
+    LessonInfo lessonInfo1;
+    LessonInfo lessonInfo2;
 
     @BeforeEach
     void beforeEach(){
-        repo = new MemoryLessonInfoRepository();
-        lessoninfo1 = new LessonInfo(1L, 1L,1L, LocalDateTime.of(2025,4,10,13,0),false);
-        lessoninfo2 = new LessonInfo(2L, 2L,2L, LocalDateTime.of(2025,4,10,14,0),false);
+        lessonInfoRepository = new MemoryLessonInfoRepository();
+        lessonInfo1 = new LessonInfo(null, 1L,1L, LocalDateTime.of(2025,4,10,13,0),false);
+        lessonInfo2 = new LessonInfo(null, 2L,2L, LocalDateTime.of(2025,4,10,14,0),false);
     }
 
     @AfterEach
     void afterEach(){
-        repo.clearStore();
+        lessonInfoRepository.clearStore();
     }
 
     @Test
     void saveLoadTest(){
         //given
-        repo.createLessonInfo(lessoninfo1);
-        repo.createLessonInfo(lessoninfo2);
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
+        lessonInfoRepository.createLessonInfo(lessonInfo2);
         String pathname = "src/test/resources/data/testLessonInfos.json";
+        List<LessonInfo> lessonInfoList = lessonInfoRepository.getLessonInfos();
         //when
-        repo.saveToFile(pathname);
-        repo.clearStore();
-        repo.loadFromFile(pathname);
+        lessonInfoRepository.saveToFile(pathname);
+        lessonInfoRepository.clearStore();
+        lessonInfoRepository.loadFromFile(pathname);
         //then
-        for(LessonInfo lessonInfo: repo.getLessonInfos()){
-            if (lessonInfo.getId() == 1L) {
-                Assertions.assertEquals(lessoninfo1.toString(), lessonInfo.toString());
-            }
-            else{
-                Assertions.assertEquals(lessoninfo2.toString(), lessonInfo.toString());
-            }
+        for(LessonInfo lessoninfo:lessonInfoList){
+            lessonInfoRepository.getLessonInfo(lessoninfo.getId())
+                    .ifPresentOrElse(
+                            l->Assertions.assertEquals(lessoninfo.toString() ,l.toString()),
+                            ()->Assertions.fail("getLessoonInfo에서 Optional.empty()를 반환했습니다.")
+                    );
         }
     }
 
     @Test
     void realJsonLoadSaveTest(){
-        repo.loadFromFile("src/main/resources/data/lessonInfos.json");
-        List<LessonInfo> LessonInfoList1 = repo.getLessonInfos();
-        repo.saveToFile("src/test/resources/data/lessonInfos.json");
-        repo.clearStore();
-        repo.loadFromFile("src/test/resources/data/lessonInfos.json");
+        lessonInfoRepository.loadFromFile("src/main/resources/data/lessonInfos.json");
+        List<LessonInfo> LessonInfoList1 = lessonInfoRepository.getLessonInfos();
+        lessonInfoRepository.saveToFile("src/test/resources/data/lessonInfos.json");
+        lessonInfoRepository.clearStore();
+        lessonInfoRepository.loadFromFile("src/test/resources/data/lessonInfos.json");
         for(LessonInfo l1: LessonInfoList1){
-            repo.getLessonInfo(l1.getId())
+            lessonInfoRepository.getLessonInfo(l1.getId())
                     .ifPresent(l2->{
                         Assertions.assertEquals(l1.toString(),l2.toString());
                     });
@@ -67,33 +68,33 @@ public class MemoryLessonInfoRepositoryTest {
 
     @Test
     void getLengthTest(){
-        Assertions.assertEquals(0, repo.getLength());
+        Assertions.assertEquals(0, lessonInfoRepository.getLength());
     }
 
     @Test
     void getLessonInfoTest(){
         //given
-        repo.createLessonInfo(lessoninfo1);
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
         //when
-        Optional<LessonInfo> lessonInfoOptional = repo.getLessonInfo(1L);
+        Optional<LessonInfo> lessonInfoOptional = lessonInfoRepository.getLessonInfo(1L);
         //then
-        lessonInfoOptional.ifPresent(l->{Assertions.assertEquals(lessoninfo1.toString(), l.toString());});
+        lessonInfoOptional.ifPresent(l->{Assertions.assertEquals(lessonInfo1.toString(), l.toString());});
     }
 
     @Test
     void getLessonInfos(){
         //given
-        repo.createLessonInfo(lessoninfo1);
-        repo.createLessonInfo(lessoninfo2);
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
+        lessonInfoRepository.createLessonInfo(lessonInfo2);
         //when
-        List<LessonInfo> lessonInfoList = repo.getLessonInfos();
+        List<LessonInfo> lessonInfoList = lessonInfoRepository.getLessonInfos();
         //then
         for(LessonInfo lessonInfo: lessonInfoList){
             if (lessonInfo.getId() == 1L) {
-                Assertions.assertEquals(lessoninfo1.toString(), lessonInfo.toString());
+                Assertions.assertEquals(this.lessonInfo1.toString(), lessonInfo.toString());
             }
             else{
-                Assertions.assertEquals(lessoninfo2.toString(), lessonInfo.toString());
+                Assertions.assertEquals(this.lessonInfo2.toString(), lessonInfo.toString());
             }
         }
     }
@@ -101,42 +102,77 @@ public class MemoryLessonInfoRepositoryTest {
     @Test
     void createLessonInfoTest(){
         //when
-        repo.createLessonInfo(lessoninfo1);
-        repo.createLessonInfo(lessoninfo2);
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
+        lessonInfoRepository.createLessonInfo(lessonInfo2);
         //then
-        Assertions.assertEquals(2, repo.getLength());
+        Assertions.assertEquals(2, lessonInfoRepository.getLength());
     }
 
     @Test
     void updateLessonInfo(){
         //given
-        Optional<LessonInfo> LessonInfoOptional = repo.getLessonInfo(1L);
-        LessonInfoOptional.ifPresent(l->{l.setTeacherId(2L);});
+        long createdId = lessonInfoRepository.createLessonInfo(lessonInfo1)
+                .map(LessonInfo::getId)
+                .orElseThrow(()->new AssertionError("craete 함수가 Optional.empty()를 반환헀습니다."));
+        lessonInfo1.setId(createdId);
+        lessonInfo1.setCompleted(true);
         //when
-        LessonInfoOptional.ifPresent(l->{repo.updateLessonInfo(l);});
+        Optional<LessonInfo> lessonInfoOptional = lessonInfoRepository.updateLessonInfo(lessonInfo1);
         //then
-        repo.getLessonInfo(1L).ifPresent(l->{Assertions.assertEquals(2L,l.getTeacherId());});
+        lessonInfoOptional.ifPresentOrElse(
+                l->Assertions.assertEquals(true, l.isCompleted()),
+                ()->Assertions.fail()
+                );
     }
 
     @Test
     void deleteLessonInfoTest(){
         //given
-        repo.createLessonInfo(lessoninfo1);
+        long createdId = lessonInfoRepository.createLessonInfo(lessonInfo1)
+                .map(LessonInfo::getId)
+                .orElseThrow(()->new AssertionError("craete 함수가 Optional.empty()를 반환헀습니다."));
         //when
-        repo.deleteLessonInfo(1L);
+        lessonInfoRepository.deleteLessonInfo(createdId);
         //then
-        Assertions.assertEquals(0,repo.getLength());
+        Assertions.assertEquals(0, lessonInfoRepository.getLength());
     }
 
     @Test
     void clearStoreTest(){
         //given
-        repo.createLessonInfo(lessoninfo1);
-        repo.createLessonInfo(lessoninfo2);
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
+        lessonInfoRepository.createLessonInfo(lessonInfo2);
         //when
-        repo.clearStore();
+        lessonInfoRepository.clearStore();
         //then
-        Assertions.assertEquals(0,repo.getLength());
+        Assertions.assertEquals(0, lessonInfoRepository.getLength());
+    }
+
+    @Test
+    void findByStudentIdTest(){
+        //given
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
+        //when
+        List<LessonInfo> lessonInfoList =  lessonInfoRepository.findByStudentId(lessonInfo1.getStudentId());
+        //then
+        lessonInfoList.stream().findAny().ifPresentOrElse(
+                l->Assertions.assertEquals(lessonInfo1.toString(), l.toString()),
+                ()->Assertions.fail("리스트에 아무 값도 없었습니다.")
+        );
+
+    }
+
+    @Test
+    void findByTeacherIdTest(){
+        //given
+        lessonInfoRepository.createLessonInfo(lessonInfo1);
+        //when
+        List<LessonInfo> lessonInfoList =  lessonInfoRepository.findByTeacherId(lessonInfo1.getTeacherId());
+        //then
+        lessonInfoList.stream().findAny().ifPresentOrElse(
+                l->Assertions.assertEquals(lessonInfo1.toString(), l.toString()),
+                ()->Assertions.fail("리스트에 아무 값도 없었습니다.")
+        );
     }
 
 }

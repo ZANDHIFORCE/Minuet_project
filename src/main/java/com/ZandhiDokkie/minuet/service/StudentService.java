@@ -47,6 +47,13 @@ public class StudentService {
         studentRepository.clearStore();
     }
 
+    public Student getStudentByName(String studentName){
+        return studentRepository.findByName(studentName)
+                .orElseThrow(()->{
+                    return new NoSuchElementException("해당 학생의 이름는 존재 하지 않습니다.");
+                });
+    }
+
 
 
 
