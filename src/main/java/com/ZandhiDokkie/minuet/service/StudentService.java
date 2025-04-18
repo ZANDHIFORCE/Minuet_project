@@ -1,6 +1,7 @@
 package com.ZandhiDokkie.minuet.service;
 
 import com.ZandhiDokkie.minuet.domain.Student;
+import com.ZandhiDokkie.minuet.repository.interfaces.StudentRepository;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryStudentRepository;
 
 import java.util.ArrayList;
@@ -9,13 +10,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class StudentService {
-    private final MemoryStudentRepository studentRepository;
+    private final StudentRepository studentRepository;
 
     public StudentService(MemoryStudentRepository studentRepository){
         this.studentRepository = studentRepository;
     }
 
-    public Integer getStudentCounts(){
+    public int getStudentCounts(){
         return studentRepository.getLength();
     }
 
@@ -53,11 +54,5 @@ public class StudentService {
                     return new NoSuchElementException("해당 학생의 이름는 존재 하지 않습니다.");
                 });
     }
-
-
-
-
-
-
 
 }
