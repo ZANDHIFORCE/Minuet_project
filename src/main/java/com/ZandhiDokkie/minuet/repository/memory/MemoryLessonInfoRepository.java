@@ -18,9 +18,11 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
     private final Map<Long, LessonInfo> lessonInfos = new HashMap<Long, LessonInfo>();
     private long nextId = 1L;
 
-    public MemoryLessonInfoRepository(){}
+    public MemoryLessonInfoRepository(){
+        this.loadFromFile();
+    }
     public void saveToFile(){
-        saveToFile("src/main/resources/data/lessons_info.json");
+        saveToFile("src/main/resources/data/lessonInfos.json");
     }
 
     public void saveToFile(String pathname){
@@ -37,7 +39,7 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
     }
 
     public void loadFromFile(){
-        loadFromFile("src/main/resources/data/lessons_info.json");
+        loadFromFile("src/main/resources/data/lessonInfos.json");
     }
 
     public void loadFromFile(String pathname){

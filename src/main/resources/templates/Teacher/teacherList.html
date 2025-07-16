@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>선생님 목록 - Minuet</title>
+</head>
+<body>
+    <h1>👨‍🏫 선생님 목록</h1>
+    
+    <p><a href="/">← 홈으로</a> | <a href="/Teacher/new">선생님 등록</a></p>
+    
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>이름</th>
+                <th>전공</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="teacher: ${teacherList}">
+                <td align="center" th:text="${teacher.id}"></td>
+                <td align="center" th:text="${teacher.name}"></td>
+                <td align="center" th:text="${teacher.subject}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><strong>총 선생님 수:</strong> <span th:text="${#lists.size(teacherList)}"></span>명</p>
+</body>
+</html>

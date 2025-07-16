@@ -17,7 +17,7 @@ public class TeacherService {
         return teacherRepository.getLength();
     }
 
-    public Teacher getStudentDetail(Long teacherID){
+    public Teacher getTeacherDetail(Long teacherID){
         return teacherRepository.getTeacher(teacherID)
                 .orElseThrow(()->new NoSuchElementException("해당 아이디의 선생님은 없습니다."));
     }

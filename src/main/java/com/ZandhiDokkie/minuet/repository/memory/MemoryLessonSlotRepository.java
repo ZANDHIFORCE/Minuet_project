@@ -17,7 +17,9 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
     private final Map<Long, LessonSlot> lessonSlots = new HashMap<>();
     private long nextId = 1L;
 
-    public MemoryLessonSlotRepository(){}
+    public MemoryLessonSlotRepository(){
+        this.loadFromFile();
+    }
 
     public void saveToFile(String pathname){
         ObjectMapper mapper = new ObjectMapper();
@@ -30,6 +32,11 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
             e.printStackTrace();
         }
 
+    }
+
+    public void loadFromFile()
+    {
+        this.loadFromFile("src/main/resources/data/lessonSlots.json");
     }
 
     public void loadFromFile(String pathname){

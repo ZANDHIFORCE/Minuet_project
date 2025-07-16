@@ -15,6 +15,14 @@ public class MemoryTeacherRepository implements TeacherRepository{
     private final Map<Long, Teacher> teachers = new HashMap<>();
     private long nextId = 1L;
 
+    public MemoryTeacherRepository() {
+        this.loadFromFile();
+    }
+
+    public void loadFromFile(){
+        this.loadFromFile("src/main/resources/data/teachers.json");
+    }
+
     public void loadFromFile(String pathname){
         ObjectMapper mapper = new ObjectMapper();
         File file = new File(pathname);

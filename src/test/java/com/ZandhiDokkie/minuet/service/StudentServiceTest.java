@@ -43,21 +43,19 @@ public class StudentServiceTest {
         //given
         studentService.registerStudent(student1);
         //when
-        Student student = studentService.getStudentDetail(1L);
+        Student student = studentService.getStudentDetail(student1.getId());
         //then
         Assertions.assertEquals(student1.toString(), student.toString());
     }
 
     @Test
     void getStudentDetail_shouldThrowException_whenStudentDoesNotExist(){
-        try{
-            //when
-            studentService.getStudentDetail(1L);
-            Assertions.fail();
-        } catch (NoSuchElementException e) {
-            //then
-            Assertions.assertEquals("해당학생이 존재 하지 않습니다.", e.getMessage());
-        }
+        //when & then
+        NoSuchElementException e = Assertions.assertThrows(
+                NoSuchElementException.class,
+                () -> studentService.getStudentDetail(999L)
+        );
+        Assertions.assertEquals("해당학생이 존재 하지 않습니다.", e.getMessage());
     }
 
     @Test

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>학생 등록 - Minuet</title>
+</head>
+<body>
+    <h1>👨‍🎓 학생 등록</h1>
+    
+    <p><a href="/">← 홈으로</a> | <a href="/Student/list">학생 목록</a></p>
+    
+    <form action="/Student/new" method="post">
+        <fieldset>
+            <legend>학생 정보</legend>
+            
+            <p>
+                <label for="name">이름:</label><br>
+                <input type="text" id="name" name="name" placeholder="학생 이름을 입력하세요" required>
+            </p>
+            
+            <p>
+                <button type="submit">등록</button>
+                <button type="reset">초기화</button>
+            </p>
+        </fieldset>
+    </form>
+</body>
+</html>

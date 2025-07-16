@@ -18,12 +18,25 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	// 웹 애플리케이션 필수
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	// Thymeleaf 템플릿 엔진 (HTML 템플릿 사용 중)
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	
+	// Jackson JSON 직렬화 (메모리 레포지토리에서 JSON 파일 처리용)
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	
+	// 개발 편의성 (핫 리로드 등)
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	// 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// jdbc, h2 데이터베이스 관련 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	runtimeOnly 'com.h2database:h2' //import 안되게 제한
 }
 
 tasks.named('test') {

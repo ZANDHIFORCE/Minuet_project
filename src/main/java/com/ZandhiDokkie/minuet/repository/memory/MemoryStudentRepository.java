@@ -14,6 +14,10 @@ public class MemoryStudentRepository implements StudentRepository {
     private  final Map<Long, Student> students = new HashMap<>();
     private long nextId = 1L;
 
+    public MemoryStudentRepository(){
+        this.loadFromFile();
+    }
+
     public void saveToFile(String pathname){
         File file = new File(pathname);
         ObjectMapper mapper = new ObjectMapper();
@@ -23,6 +27,10 @@ public class MemoryStudentRepository implements StudentRepository {
             e.printStackTrace();
         }
 
+    }
+
+    public void loadFromFile(){
+        this.loadFromFile("src/main/resources/data/students.json");
     }
 
     public void loadFromFile(String pathname){

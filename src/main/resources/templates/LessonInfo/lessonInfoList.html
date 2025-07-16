@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>레슨 목록 - Minuet</title>
+</head>
+<body>
+    <h1>📅 레슨 목록</h1>
+    
+    <p><a href="/">← 홈으로</a> | <a href="/LessonInfo/new">레슨 예약</a></p>
+    
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>선생님 ID</th>
+                <th>학생 ID</th>
+                <th>레슨 일정</th>
+                <th>완료 여부</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="lessonInfo: ${lessonInfoList}">
+                <td align="center" th:text="${lessonInfo.id}"></td>
+                <td align="center" th:text="${lessonInfo.teacherId}"></td>
+                <td align="center" th:text="${lessonInfo.studentId}"></td>
+                <td align="center" th:text="${lessonInfo.dateTime}"></td>
+                <td align="center" th:text="${lessonInfo.completed ? '완료' : '예정'}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><strong>총 레슨 수:</strong> <span th:text="${#lists.size(lessonInfoList)}"></span>개</p>
+</body>
+</html>

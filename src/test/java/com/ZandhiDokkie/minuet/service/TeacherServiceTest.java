@@ -34,7 +34,7 @@ public class TeacherServiceTest {
     @Test
     void getTeacherDetailTest() {
         teacherService.registerTeacher(teacher1);
-        Teacher found = teacherService.getStudentDetail(teacher1.getId());
+        Teacher found = teacherService.getTeacherDetail(teacher1.getId());
         Assertions.assertEquals(teacher1.toString(), found.toString());
     }
 
@@ -42,7 +42,7 @@ public class TeacherServiceTest {
     void getTeacherDetail_shouldThrowException_whenTeacherDoesNotExist() {
         NoSuchElementException e = Assertions.assertThrows(
                 NoSuchElementException.class,
-                () -> teacherService.getStudentDetail(999L)
+                () -> teacherService.getTeacherDetail(999L)
         );
         Assertions.assertEquals("해당 아이디의 선생님은 없습니다.", e.getMessage());
     }
@@ -58,7 +58,7 @@ public class TeacherServiceTest {
     @Test
     void registerTeacherTest() {
         teacherService.registerTeacher(teacher1);
-        Teacher found = teacherService.getStudentDetail(teacher1.getId());
+        Teacher found = teacherService.getTeacherDetail(teacher1.getId());
         Assertions.assertEquals(teacher1.toString(), found.toString());
     }
 

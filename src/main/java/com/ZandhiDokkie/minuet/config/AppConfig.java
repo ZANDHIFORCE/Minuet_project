@@ -8,28 +8,49 @@ import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonInfoRepository;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonSlotRepository;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryStudentRepository;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryTeacherRepository;
+import com.ZandhiDokkie.minuet.service.LessonInfoService;
+import com.ZandhiDokkie.minuet.service.LessonSlotService;
+import com.ZandhiDokkie.minuet.service.StudentService;
+import com.ZandhiDokkie.minuet.service.TeacherService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AppConfig {
     @Bean
-    public TeacherRepository TeacherRepository(){
+    public TeacherService teacherService(){
+        return new TeacherService(teacherRepository());
+    }
+    @Bean
+    public TeacherRepository teacherRepository(){
         return new MemoryTeacherRepository();
     }
 
     @Bean
-    public StudentRepository StudentRepository(){
+    public StudentService studentService(){
+        return new StudentService(studentRepository());
+    }
+    @Bean
+    public StudentRepository studentRepository(){
         return new MemoryStudentRepository();
     }
 
     @Bean
-    public LessonSlotRepository LessonSlotRepository(){
+    public LessonSlotService lessonSlotService()
+    {
+        return new LessonSlotService(lessonSlotRepository());
+    }
+    @Bean
+    public LessonSlotRepository lessonSlotRepository(){
         return new MemoryLessonSlotRepository();
     }
 
     @Bean
-    public LessonInfoRepository LessonInfoRepository(){
+    public LessonInfoService lessonInfoService(){
+        return new LessonInfoService(lessonInfoRepository());
+    }
+    @Bean
+    public LessonInfoRepository lessonInfoRepository(){
         return new MemoryLessonInfoRepository();
     }
 }

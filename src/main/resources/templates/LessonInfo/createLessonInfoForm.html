@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>레슨 예약 - Minuet</title>
+</head>
+<body>
+    <h1>📅 레슨 예약</h1>
+    
+    <p><a href="/">← 홈으로</a> | <a href="/LessonInfo/list">레슨 목록</a></p>
+    
+    <form action="/LessonInfo/new" method="post">
+        <fieldset>
+            <legend>레슨 정보</legend>
+            
+            <p>
+                <label for="teacherId">선생님 ID:</label><br>
+                <input type="number" id="teacherId" name="teacherId" placeholder="선생님 ID를 입력하세요" required>
+            </p>
+            
+            <p>
+                <label for="studentId">학생 ID:</label><br>
+                <input type="number" id="studentId" name="studentId" placeholder="학생 ID를 입력하세요" required>
+            </p>
+            
+            <p>
+                <label for="dateTime">레슨 일정:</label><br>
+                <input type="datetime-local" id="dateTime" name="dateTime" required>
+            </p>
+            
+            <p>
+                <button type="submit">예약</button>
+                <button type="reset">초기화</button>
+            </p>
+        </fieldset>
+    </form>
+    
+    <hr>
+    <p><em>💡 팁: 선생님과 학생의 ID는 각각의 목록 페이지에서 확인할 수 있습니다.</em></p>
+</body>
+</html>

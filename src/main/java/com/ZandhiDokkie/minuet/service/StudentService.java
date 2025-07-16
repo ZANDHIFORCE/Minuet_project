@@ -2,7 +2,6 @@ package com.ZandhiDokkie.minuet.service;
 
 import com.ZandhiDokkie.minuet.domain.Student;
 import com.ZandhiDokkie.minuet.repository.interfaces.StudentRepository;
-import com.ZandhiDokkie.minuet.repository.memory.MemoryStudentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
 
-    public StudentService(MemoryStudentRepository studentRepository){
+    public StudentService(StudentRepository studentRepository){
         this.studentRepository = studentRepository;
     }
 
