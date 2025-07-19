@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 public class AppConfig {
     private DataSource dataSource;
 
-    public AppConfig(DataSource datasource){
+    public AppConfig(DataSource dataSource){
         this.dataSource = dataSource;
     }
 
