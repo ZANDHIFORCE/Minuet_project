@@ -27,14 +27,13 @@ public class TeacherController {
 
     @PostMapping("/Teacher/new")
     public String registerTeacher(@RequestParam String name,
-                                  @RequestParam String subject) {
+                                  @RequestParam String subject, Model model) {
         try {
             Teacher teacher = new Teacher(null, name, subject);
             teacherService.registerTeacher(teacher);
             return "redirect:/";
-        } catch (Exception e) {
-            System.out.println("Error occurred: " + e.getMessage());
-            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMessage", e.getMessage());
             return "Teacher/createTeacherForm";
         }
     }
