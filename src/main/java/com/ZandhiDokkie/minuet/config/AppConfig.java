@@ -4,6 +4,7 @@ import com.ZandhiDokkie.minuet.repository.interfaces.LessonInfoRepository;
 import com.ZandhiDokkie.minuet.repository.interfaces.LessonSlotRepository;
 import com.ZandhiDokkie.minuet.repository.interfaces.StudentRepository;
 import com.ZandhiDokkie.minuet.repository.interfaces.TeacherRepository;
+import com.ZandhiDokkie.minuet.repository.jdbc.JdbcStudentRepository;
 import com.ZandhiDokkie.minuet.repository.jdbc.JdbcTeacherRepository;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonInfoRepository;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonSlotRepository;
@@ -41,7 +42,10 @@ public class AppConfig {
         return new StudentService(studentRepository());
     }
     @Bean
-    public StudentRepository studentRepository(){return new MemoryStudentRepository();}
+    public StudentRepository studentRepository(){
+        return new JdbcStudentRepository(dataSource);
+        //return new MemoryStudentRepository();}
+    }
 
     @Bean
     public LessonSlotService lessonSlotService()
