@@ -87,6 +87,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
 
     @Override
     public void clearStore() {
+        String sql = "DELETE FROM teacher";
+        jdbcTemplate.update(sql);
     }
 
     @Override

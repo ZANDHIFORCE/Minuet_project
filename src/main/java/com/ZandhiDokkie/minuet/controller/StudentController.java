@@ -28,8 +28,8 @@ public class StudentController {
 
     @PostMapping("/Student/new")
     public String registerStudent(@RequestParam String name,
-                                 @RequestParam(required = false) Integer progressSessions,
-                                 @RequestParam(required = false) Integer totalSessions) {
+                                 @RequestParam(defaultValue = "0") Integer progressSessions,
+                                 @RequestParam(defaultValue = "0") Integer totalSessions) {
         try {
             Student student = new Student(null, name, progressSessions, totalSessions);
             studentService.registerStudent(student);

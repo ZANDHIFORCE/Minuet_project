@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 
 @Configuration
 public class AppConfig {
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public AppConfig(DataSource dataSource){
         this.dataSource = dataSource;

@@ -3,3 +3,10 @@ CREATE TABLE teacher (
     name VARCHAR(100) NOT NULL,
     subject VARCHAR(100) NOT NULL
 );
+
+CREATE TABLE student (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    progressSessions INT NOT NULL DEFAULT 0,
+    totalSessions INT NOT NULL DEFAULT 0
+);
