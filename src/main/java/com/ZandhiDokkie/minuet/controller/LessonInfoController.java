@@ -29,23 +29,12 @@ public class LessonInfoController {
     @PostMapping("/LessonInfo/new")
     public String registerLessonInfo(@RequestParam Long teacherId,
                                      @RequestParam Long studentId,
-                                     @RequestParam String dateTime) {
+                                     @RequestParam LocalDateTime dateTime) {
         try {
-            LocalDateTime parsedDateTime;
-            try {
-                // ISO 형식으로 파싱 시도 (yyyy-MM-ddTHH:mm)
-                parsedDateTime = LocalDateTime.parse(dateTime);
-            } catch (Exception e) {
-                // 파싱 실패 시 폼으로 돌아가기
-                System.out.println("Invalid date format: " + dateTime);
-                return "LessonInfo/createLessonInfoForm";
-            }
-            
-            LessonInfo lessonInfo = new LessonInfo(null, teacherId, studentId, parsedDateTime, false);
-            this.lessonInfoService.registerLessonInfo(lessonInfo);
+            LessonInfo lessonInfo = new LessonInfo(null, teacherId, studentId, dateTime, false);
+            lessonInfoService.registerLessonInfo(lessonInfo);
             return "redirect:/";
         } catch (Exception e) {
-            // 에러 발생 시 로그 출력하고 다시 폼으로 돌아가기
             System.out.println("Error occurred: " + e.getMessage());
             e.printStackTrace();
             return "LessonInfo/createLessonInfoForm";
