@@ -7,6 +7,10 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JDBC 기반 레슨 슬롯 리포지토리 구현체
+ * TODO: 실제 데이터베이스 연동 로직 구현 필요
+ */
 public class JdbcLessonSlotRepository implements LessonSlotRepository {
 
     private DataSource dataSource;
