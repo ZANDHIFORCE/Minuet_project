@@ -65,9 +65,28 @@ http://localhost:8080
 - 테스트 코드 작성
 - 데이터베이스 연동
 
+## API 엔드포인트
+- **홈페이지**: `GET /`
+- **학생 관리**: `GET/POST /students`
+- **선생님 관리**: `GET/POST /teachers`
+- **레슨 정보 관리**: `GET/POST /lesson-infos`
+- **레슨 스케줄 관리**: `GET/POST /lesson-slots`
+- **H2 데이터베이스 콘솔**: `GET /h2-console`
+
+## 테스트 실행
+```bash
+./gradlew test
+```
+
+## 데이터베이스 접속
+- URL: `jdbc:h2:mem:minuet`
+- 사용자명: `sa`
+- 비밀번호: (빈 값)
+
 ## 업데이트 기록
-- 2025-08-05: JDBC Repository 구현 완료 및 LessonSlot 기능 추가
-- 2025-07-22: 프로젝트 초기 설정 완료
+- **2025-08-07**: 코드 품질 개선 및 문서화 강화
+- **2025-08-05**: JDBC Repository 구현 완료 및 LessonSlot 기능 추가
+- **2025-07-22**: 프로젝트 초기 설정 완료
 
 ---
 *이 프로젝트는 Spring Boot 학습을 위한 개인 프로젝트입니다.*
