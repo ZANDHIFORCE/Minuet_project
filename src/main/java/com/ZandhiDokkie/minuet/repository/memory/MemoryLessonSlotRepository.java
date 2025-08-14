@@ -18,7 +18,6 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
     private long nextId = 1L;
 
     public MemoryLessonSlotRepository(){
-        this.loadFromFile();
     }
 
     public void saveToFile(String pathname){

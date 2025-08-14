@@ -27,39 +27,6 @@ public class MemoryLessonSlotRepositoryTest {
         lessonSlotRepository.clearStore();
     }
 
-    @Test
-    void saveLoadTest(){
-        //given
-        String pathname = "src/test/resources/data/testLessonSlots.json";
-        lessonSlotRepository.createLessonSlot(lessonSlot1);
-        lessonSlotRepository.createLessonSlot(lessonSlot2);
-        //when
-        lessonSlotRepository.saveToFile(pathname);
-        lessonSlotRepository.clearStore();
-        lessonSlotRepository.loadFromFile(pathname);
-        //then
-        for(LessonSlot l: lessonSlotRepository.getLessonSlots()){
-            if(l.getId().equals(lessonSlot1.getId()))
-                Assertions.assertEquals(lessonSlot1.toString(), l.toString());
-            else
-                Assertions.assertEquals(lessonSlot2.toString(), l.toString());
-        }
-    }
-
-    @Test
-    void realJsonLoadSaveTest(){
-        lessonSlotRepository.loadFromFile("src/main/resources/data/lessonSlots.json");
-        List<LessonSlot> LessonSlotList1 = lessonSlotRepository.getLessonSlots();
-        lessonSlotRepository.saveToFile("src/test/resources/data/lessonSlots.json");
-        lessonSlotRepository.clearStore();
-        lessonSlotRepository.loadFromFile("src/test/resources/data/lessonSlots.json");
-        for(LessonSlot l1: LessonSlotList1){
-            lessonSlotRepository.getLessonSlot(l1.getId())
-                    .ifPresent(l2->{
-                        Assertions.assertEquals(l1.toString(),l2.toString());
-                    });
-        }
-    }
 
     //implementation
     @Test

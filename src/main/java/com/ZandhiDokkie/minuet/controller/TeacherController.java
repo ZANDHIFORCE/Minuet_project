@@ -32,7 +32,7 @@ public class TeacherController {
             Teacher teacher = new Teacher(null, name, subject);
             teacherService.registerTeacher(teacher);
             return "redirect:/";
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "Teacher/createTeacherForm";
         }

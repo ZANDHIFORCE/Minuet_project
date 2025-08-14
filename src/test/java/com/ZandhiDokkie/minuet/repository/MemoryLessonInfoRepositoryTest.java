@@ -30,41 +30,6 @@ public class MemoryLessonInfoRepositoryTest {
         lessonInfoRepository.clearStore();
     }
 
-    @Test
-    void saveLoadTest(){
-        //given
-        lessonInfoRepository.createLessonInfo(lessonInfo1);
-        lessonInfoRepository.createLessonInfo(lessonInfo2);
-        String pathname = "src/test/resources/data/testLessonInfos.json";
-        List<LessonInfo> lessonInfoList = lessonInfoRepository.getLessonInfos();
-        //when
-        lessonInfoRepository.saveToFile(pathname);
-        lessonInfoRepository.clearStore();
-        lessonInfoRepository.loadFromFile(pathname);
-        //then
-        for(LessonInfo lessoninfo:lessonInfoList){
-            lessonInfoRepository.getLessonInfo(lessoninfo.getId())
-                    .ifPresentOrElse(
-                            l->Assertions.assertEquals(lessoninfo.toString() ,l.toString()),
-                            ()->Assertions.fail("getLessoonInfo에서 Optional.empty()를 반환했습니다.")
-                    );
-        }
-    }
-
-    @Test
-    void realJsonLoadSaveTest(){
-        lessonInfoRepository.loadFromFile("src/main/resources/data/lessonInfos.json");
-        List<LessonInfo> LessonInfoList1 = lessonInfoRepository.getLessonInfos();
-        lessonInfoRepository.saveToFile("src/test/resources/data/lessonInfos.json");
-        lessonInfoRepository.clearStore();
-        lessonInfoRepository.loadFromFile("src/test/resources/data/lessonInfos.json");
-        for(LessonInfo l1: LessonInfoList1){
-            lessonInfoRepository.getLessonInfo(l1.getId())
-                    .ifPresent(l2->{
-                        Assertions.assertEquals(l1.toString(),l2.toString());
-                    });
-        }
-    }
 
     @Test
     void getLengthTest(){

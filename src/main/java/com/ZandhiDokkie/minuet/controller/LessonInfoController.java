@@ -29,7 +29,7 @@ public class LessonInfoController {
     @PostMapping("/LessonInfo/new")
     public String registerLessonInfo(@RequestParam Long teacherId,
                                      @RequestParam Long studentId,
-                                     @RequestParam LocalDateTime dateTime) {
+                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime) {
         try {
             LessonInfo lessonInfo = new LessonInfo(null, teacherId, studentId, dateTime, false);
             lessonInfoService.registerLessonInfo(lessonInfo);
@@ -46,6 +46,5 @@ public class LessonInfoController {
         model.addAttribute("lessonInfoList", lessonInfoList);
         return "LessonInfo/lessonInfoList";
     }
-
 
 }

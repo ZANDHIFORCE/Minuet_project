@@ -15,7 +15,6 @@ public class MemoryStudentRepository implements StudentRepository {
     private long nextId = 1L;
 
     public MemoryStudentRepository(){
-        this.loadFromFile();
     }
 
     public void saveToFile(String pathname){

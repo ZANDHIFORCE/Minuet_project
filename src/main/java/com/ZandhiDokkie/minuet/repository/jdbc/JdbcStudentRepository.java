@@ -71,7 +71,7 @@ public class JdbcStudentRepository implements StudentRepository {
             student.setId(key.longValue());
             return Optional.of(student);
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException(e);
         }
     }
 

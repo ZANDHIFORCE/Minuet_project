@@ -16,7 +16,6 @@ public class MemoryTeacherRepository implements TeacherRepository{
     private long nextId = 1L;
 
     public MemoryTeacherRepository() {
-        this.loadFromFile();
     }
 
     public void loadFromFile(){

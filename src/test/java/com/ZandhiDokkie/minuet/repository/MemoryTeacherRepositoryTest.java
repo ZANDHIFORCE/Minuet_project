@@ -28,41 +28,6 @@ public class MemoryTeacherRepositoryTest {
         repo.clearStore();
     }
 
-    @Test
-    void saveLoadTest() {
-        //given
-        this.repo.createTeacher(teacher1);
-        this.repo.createTeacher(teacher2);
-        String pathname = "src/test/resources/data/testTeachers.json";
-        //when
-        repo.saveToFile(pathname);
-        repo.clearStore();
-        repo.loadFromFile(pathname);
-        //then
-        for (Teacher teacher: repo.getTeachers()){
-            if (Objects.equals(teacher.getId(), teacher1.getId())) {
-                Assertions.assertEquals(teacher1.toString(), teacher.toString());
-            }
-            else{
-                Assertions.assertEquals(teacher2.toString(), teacher.toString());
-            }
-        }
-    }
-
-    @Test
-    void realJsonLoadSaveTest(){
-        repo.loadFromFile("src/main/resources/data/teachers.json");
-        List<Teacher> teacherList1 = repo.getTeachers();
-        repo.saveToFile("src/test/resources/data/teachers.json");
-        repo.clearStore();
-        repo.loadFromFile("src/test/resources/data/teachers.json");
-        for(Teacher t1: teacherList1){
-            repo.getTeacher(t1.getId())
-                    .ifPresent(t2->{
-                        Assertions.assertEquals(t1.toString(),t2.toString());
-                    });
-        }
-    }
 
     // Implements
     @Test

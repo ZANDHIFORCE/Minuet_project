@@ -85,13 +85,14 @@ class LessonInfoControllerTest {
     }
 
     @Test
-    void registerLessonInfo_WithInvalidDateTime_ShouldReturnToForm() throws Exception {
+    void registerLessonInfo_WithInvalidDateTime_ShouldReturn400() throws Exception {
+        // 실제 브라우저에서는 datetime-local input이 잘못된 형식을 보내지 않지만,
+        // 직접 API 호출이나 비정상적인 요청에 대한 방어 테스트
         mockMvc.perform(post("/LessonInfo/new")
                         .param("teacherId", "1")
                         .param("studentId", "1")
                         .param("dateTime", "invalid-date"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("LessonInfo/createLessonInfoForm"));
+                .andExpect(status().isBadRequest());
 
         verify(lessonInfoService, never()).registerLessonInfo(any(LessonInfo.class));
     }

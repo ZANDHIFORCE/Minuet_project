@@ -30,9 +30,12 @@ public class ErrorScenarioTest {
 
     @BeforeEach
     void setUp() {
+        // 데이터베이스 제약조건을 고려한 순서로 정리
+        // 1. 먼저 자식 테이블(lesson_info)을 정리
+        lessonInfoService.clearAllLessonInfos();
+        // 2. 그 다음 부모 테이블들 정리
         studentService.clearAllStudents();
         teacherService.clearAllTeachers();
-        lessonInfoService.clearAllLessonInfos();
     }
 
     @Test

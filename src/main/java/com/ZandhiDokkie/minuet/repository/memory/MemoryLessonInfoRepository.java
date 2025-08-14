@@ -19,7 +19,6 @@ public class MemoryLessonInfoRepository implements LessonInfoRepository {
     private long nextId = 1L;
 
     public MemoryLessonInfoRepository(){
-        this.loadFromFile();
     }
     public void saveToFile(){
         saveToFile("src/main/resources/data/lessonInfos.json");

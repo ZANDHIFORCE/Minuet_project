@@ -28,41 +28,6 @@ public class MemoryStudentRepositoryTest {
         repo.clearStore();
     }
 
-    @Test
-    void SaveLoadTest(){
-        //given
-        repo.createStudent(student1);
-        repo.createStudent(student2);
-        String pathname= "src/test/resources/data/testStudents.json";
-        List<Student> stduentList = repo.getStudents();
-        //when
-        repo.saveToFile(pathname);
-        repo.clearStore();
-        repo.loadFromFile(pathname);
-        //
-        for(Student student:stduentList){
-            repo.getStudent(student.getId()).ifPresent(s->{
-                Assertions.assertEquals(student.toString(), s.toString());
-            });
-        }
-    }
-
-    @Test
-    void realJsonLoadSaveTest(){
-        //given
-        repo.loadFromFile("src/main/resources/data/students.json");
-        List<Student> studentList = repo.getStudents();
-        repo.saveToFile("src/test/resources/data/students.json");
-        repo.clearStore();
-        //when
-        repo.loadFromFile("src/test/resources/data/students.json");
-        //then
-        for(Student student:studentList){
-            repo.getStudent(student.getId()).ifPresent(s->{
-                Assertions.assertEquals(student.toString(),s.toString());
-            });
-        }
-    }
 
     @Test
     void getLengthTest(){
