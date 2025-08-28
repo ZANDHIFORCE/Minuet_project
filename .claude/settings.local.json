@@ -5,7 +5,8 @@
       "Bash(git push:*)",
       "Bash(git restore:*)",
       "Bash(mv:*)",
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

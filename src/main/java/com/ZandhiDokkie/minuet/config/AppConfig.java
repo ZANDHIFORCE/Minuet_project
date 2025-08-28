@@ -55,7 +55,8 @@ public class AppConfig {
     }
     @Bean
     public LessonSlotRepository lessonSlotRepository(){
-        return new MemoryLessonSlotRepository();
+        return new JdbcLessonInfoRepository(dataSource);
+        //return new MemoryLessonSlotRepository();
     }
 
     @Bean
