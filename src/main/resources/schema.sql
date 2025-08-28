@@ -20,3 +20,13 @@ CREATE TABLE lesson_info (
     FOREIGN KEY (teacher_id) REFERENCES teacher(id),
     FOREIGN KEY (student_id) REFERENCES student(id)
 );
+
+CREATE TABLE lesson_slot (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id BIGINT NOT NULL,
+    student_id BIGINT NOT NULL,
+    day INT NOT NULL,
+    time TIME NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teacher(id),
+    FOREIGN KEY (student_id) REFERENCES student(id),
+);
