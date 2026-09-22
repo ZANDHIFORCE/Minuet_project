@@ -69,10 +69,10 @@ erDiagram
 
 | 구분 | 확인하려는 동작 | 코드 |
 | :--- | :--- | :--- |
-| 서비스 | 학생 등록·조회·수정·삭제 | [StudentServiceTest](src/test/java/com/ZandhiDokkie/minuet/service/StudentServiceTest.java) |
-| 저장소 | 메모리·JDBC 데이터 접근 | [Repository tests](src/test/java/com/ZandhiDokkie/minuet/repository) |
-| 웹 | 요청과 화면 처리 | [Controller tests](src/test/java/com/ZandhiDokkie/minuet/controller) |
-| 오류 | 존재하지 않는 데이터 처리 | [ErrorScenarioTest](src/test/java/com/ZandhiDokkie/minuet/integration/ErrorScenarioTest.java) |
+| 서비스 | 학생 등록·조회·수정·삭제 | [테스트](src/test/java/com/ZandhiDokkie/minuet/service/StudentServiceTest.java) |
+| 저장소 | 메모리·JDBC 데이터 접근 | [테스트](src/test/java/com/ZandhiDokkie/minuet/repository) |
+| 웹 | 요청과 화면 처리 | [테스트](src/test/java/com/ZandhiDokkie/minuet/controller) |
+| 오류 | 존재하지 않는 데이터 처리 | [테스트](src/test/java/com/ZandhiDokkie/minuet/integration/ErrorScenarioTest.java) |
 
 실제 실행 결과와 현재 막히는 부분은 [검증 기록](docs/VALIDATION.md)을 참고하세요.
 
