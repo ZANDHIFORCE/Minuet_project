@@ -11,7 +11,10 @@
 
 [설계 포인트](#설계-포인트) · [화면 경로](docs/ROUTES.md) · [실행 방법](docs/SETUP.md) · [검증 기록](docs/VALIDATION.md)
 
-![컨트롤러, 서비스, 저장소 인터페이스로 책임을 분리한 Minuet 구조](docs/assets/overview.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="docs/assets/overview-mobile.svg">
+  <img src="docs/assets/overview.svg" alt="컨트롤러·서비스·저장소 인터페이스로 책임을 분리한 구조">
+</picture>
 
 ## 프로젝트 개요
 
@@ -39,6 +42,7 @@ flowchart TD
     I --> M[Memory Repository]
     J --> H[H2 Database]
     M --> D[메모리 데이터]
+    classDef default fill:#eff6ff,stroke:#2563eb,color:#172554
 ```
 
 기본 구성은 **JDBC**입니다. 저장 방식은 설정 코드를 통해 교체하며, 런타임 자동 전환 기능은 아닙니다.
