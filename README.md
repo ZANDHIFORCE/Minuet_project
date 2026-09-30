@@ -9,7 +9,7 @@
 
 **개인 프로젝트** · 조동휘: 설계·구현
 
-[설계 포인트](#설계-포인트) · [화면 경로](docs/ROUTES.md) · [실행 방법](docs/SETUP.md) · [검증 기록](docs/VALIDATION.md)
+[설계 포인트](#설계-포인트) · [프로젝트 구조](#project-structure) · [화면 경로](docs/ROUTES.md) · [실행 방법](docs/SETUP.md) · [검증 기록](docs/VALIDATION.md)
 
 <picture>
   <source media="(max-width: 600px)" srcset="docs/assets/overview-mobile.svg">
@@ -75,6 +75,30 @@ erDiagram
 | [오류](src/test/java/com/ZandhiDokkie/minuet/integration/ErrorScenarioTest.java) | 존재하지 않는 데이터 처리 |
 
 실제 실행 결과와 현재 막히는 부분은 [검증 기록](docs/VALIDATION.md)을 참고하세요.
+
+<a id="project-structure"></a>
+
+## 📂 프로젝트 구조
+
+주요 코드와 문서만 표시했습니다.
+
+```text
+Minuet_project/
+├── src/main/java/com/ZandhiDokkie/minuet/  # 애플리케이션 코드
+│   ├── config/  # 저장소 구현체 연결
+│   ├── controller/  # 등록·목록 화면 요청
+│   ├── service/  # 학생·강사·레슨 처리
+│   ├── domain/  # 레슨 기록·반복 시간표 모델
+│   └── repository/  # 데이터 접근 계층
+│       ├── interfaces/  # 저장소 인터페이스
+│       ├── jdbc/  # JDBC 구현
+│       └── memory/  # 메모리 구현
+├── src/main/resources/  # 설정·화면·DB 초기화
+│   ├── templates/  # Thymeleaf 화면
+│   └── schema.sql  # 테이블 정의
+├── src/test/  # 계층별·오류 시나리오 테스트
+└── docs/  # 실행·화면 경로·검증 문서
+```
 
 ## 실행과 코드 탐색
 
