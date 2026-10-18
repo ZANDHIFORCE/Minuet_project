@@ -2,6 +2,10 @@ package com.ZandhiDokkie.minuet.repository;
 
 import com.ZandhiDokkie.minuet.repository.jdbc.JdbcLessonSlotRepository;
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
+import com.ZandhiDokkie.minuet.domain.Student;
+import com.ZandhiDokkie.minuet.domain.Teacher;
+import com.ZandhiDokkie.minuet.repository.interfaces.StudentRepository;
+import com.ZandhiDokkie.minuet.repository.interfaces.TeacherRepository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -23,14 +27,23 @@ public class JdbcLessonSlotRepositoryTest {
     
     @Autowired
     JdbcLessonSlotRepository lessonSlotRepository;
+
+    @Autowired
+    TeacherRepository teacherRepository;
+
+    @Autowired
+    StudentRepository studentRepository;
     
     LessonSlot lessonSlot1;
     LessonSlot lessonSlot2;
 
     @BeforeEach
     void beforeEach(){
-        lessonSlot1 = new LessonSlot(null, 1L, 2L, 0, LocalTime.of(13, 0));
-        lessonSlot2 = new LessonSlot(null, 1L, 2L, 2, LocalTime.of(13, 0));
+        // Use generated parent IDs: tests must not depend on seed data or execution order.
+        Teacher teacher = teacherRepository.createTeacher(new Teacher(null, "Test Teacher", "Piano")).orElseThrow();
+        Student student = studentRepository.createStudent(new Student(null, "Test Student", 0, 8)).orElseThrow();
+        lessonSlot1 = new LessonSlot(null, teacher.getId(), student.getId(), 0, LocalTime.of(13, 0));
+        lessonSlot2 = new LessonSlot(null, teacher.getId(), student.getId(), 2, LocalTime.of(13, 0));
     }
 
     @AfterEach
@@ -94,6 +107,10 @@ public class JdbcLessonSlotRepositoryTest {
         Assertions.assertTrue(updated.isPresent());
         Assertions.assertEquals(5, updated.get().getDay());
         Assertions.assertEquals(LocalTime.of(15, 30), updated.get().getTime());
+
+        LessonSlot persisted = lessonSlotRepository.getLessonSlot(toUpdate.getId()).orElseThrow();
+        Assertions.assertEquals(5, persisted.getDay());
+        Assertions.assertEquals(LocalTime.of(15, 30), persisted.getTime());
     }
 
     @Test

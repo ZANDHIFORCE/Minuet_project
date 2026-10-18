@@ -1,12 +1,12 @@
-# 실행 조건과 알려진 초기화 문제
+# 로컬 실행
 
 [README로 돌아가기](../README.md)
 
-## 현재 상태
+## 준비
 
-JDK 17과 저장소의 Gradle Wrapper로 빌드·테스트를 시작할 수 있습니다. 다만 **현재 스키마의 H2 초기화 오류 때문에 전체 애플리케이션과 통합 테스트가 정상 시작되지 않습니다.** 이 문서 개편은 애플리케이션 코드를 변경하지 않습니다.
-
-## 준비와 실행 명령
+- JDK 17
+- 저장소의 Gradle Wrapper 8.13
+- 첫 실행 시 Gradle과 의존성을 내려받을 인터넷 연결
 
 ```bash
 git clone https://github.com/ZANDHIFORCE/Minuet_project.git
@@ -14,37 +14,38 @@ cd Minuet_project
 java -version
 ```
 
-Java 17이 선택되어 있어야 합니다. 다른 Java가 기본인 경우 `JAVA_HOME`을 JDK 17로 지정합니다.
+Java 17이 선택되어 있어야 합니다. 다른 버전이 기본이면 `JAVA_HOME`을 JDK 17 경로로 지정합니다.
+
+## 테스트와 서버 실행
 
 Windows PowerShell:
 
 ```powershell
-.\gradlew.bat test
+.\gradlew.bat test --no-daemon
 .\gradlew.bat bootRun
 ```
 
 macOS / Linux:
 
 ```bash
-sh gradlew test
+sh gradlew test --no-daemon
 sh gradlew bootRun
 ```
 
-Wrapper는 Gradle 8.13을 사용합니다. 위 명령은 현재 실패를 재현하는 데에도 사용할 수 있습니다.
+`bootRun` 실행 후 `http://localhost:8080`에서 시작합니다. 종료는 `Ctrl+C`입니다. 전체 테스트와 HTTP 등록·조회 확인 결과는 [검증 기록](VALIDATION.md)에 남겼습니다.
 
-## 초기화 오류
+## 데이터베이스와 초기 데이터
 
-`schema.sql`의 `lesson_slot` 정의에서 H2가 `day`를 예약어로 해석해 구문 오류가 발생합니다. 정의 끝에는 불필요한 쉼표도 남아 있습니다. 컬럼 이름/인용 방식과 연결된 SQL을 일관되게 정리하고, 마지막 쉼표를 제거하는 후속 코드 수정이 필요합니다.
-
-현재 테스트 결과는 **141개 실행, 93개 통과, 48개 실패**입니다. 실패의 공통 원인으로 애플리케이션 컨텍스트 초기화 오류를 확인했습니다. 초기화 문제를 해결한 뒤에도 전체 테스트 재실행이 필요합니다.
-
-## 정상 초기화 후의 접속 정보
-
-- 웹: `http://localhost:8080`
 - H2 콘솔: `http://localhost:8080/h2-console`
 - JDBC URL: `jdbc:h2:mem:minuet`
 - 사용자: `sa`, 비밀번호: 빈 값
+- `schema.sql`, `data.sql`로 테이블과 예시 학생·강사·레슨을 초기화합니다.
 - H2 메모리 DB이므로 프로세스가 종료되면 데이터가 사라집니다.
-- `schema.sql`, `data.sql`에 초기 테이블과 예시 데이터가 있습니다.
+- 레슨 시간표는 기존 예시 학생·강사 ID를 사용해 등록할 수 있습니다. 초기 강사는 1·2번, 학생은 1·2·3번입니다.
+- 테스트 프로필은 별도 `testdb`를 사용하고 예시 데이터를 자동 삽입하지 않습니다. JDBC 테스트는 필요한 부모 데이터를 직접 준비합니다.
 
-실제 웹 경로는 [화면 경로](ROUTES.md), 실행 근거는 [검증 기록](VALIDATION.md)을 참고하세요.
+실제 화면 경로는 [화면 경로](ROUTES.md)를 참고하세요. 현재 화면은 등록·목록 조회 중심이며, 수정·삭제 화면과 입력 검증·중복 시간표 방지는 후속 과제입니다.
+
+## 해결한 초기화 문제
+
+기존 `lesson_slot`의 예약어 컬럼과 마지막 쉼표 때문에 서버 기동이 실패했습니다. `lesson_day`, `lesson_time`으로 SQL·매핑을 맞추고 구문을 수정했습니다. 기존 영속 DB의 컬럼 마이그레이션은 제공하지 않으며 이 실행 안내는 새 H2 메모리 DB 기준입니다.

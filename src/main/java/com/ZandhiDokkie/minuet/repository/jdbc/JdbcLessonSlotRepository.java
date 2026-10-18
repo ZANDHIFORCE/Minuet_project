@@ -20,7 +20,6 @@ import java.util.Optional;
 
 /**
  * JDBC 기반 레슨 슬롯 리포지토리 구현체
- * TODO: 실제 데이터베이스 연동 로직 구현 필요
  */
 public class JdbcLessonSlotRepository implements LessonSlotRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -37,8 +36,8 @@ public class JdbcLessonSlotRepository implements LessonSlotRepository {
                 lessonSlot.setId(rs.getLong("id"));
                 lessonSlot.setTeacherId(rs.getLong("teacher_id"));
                 lessonSlot.setStudentId(rs.getLong("student_id"));
-                lessonSlot.setDay(rs.getInt("day"));
-                java.sql.Time time = rs.getTime("time");
+                lessonSlot.setDay(rs.getInt("lesson_day"));
+                java.sql.Time time = rs.getTime("lesson_time");
                 lessonSlot.setTime(time != null ? time.toLocalTime() : null);
                 return lessonSlot;
             }
@@ -72,8 +71,8 @@ public class JdbcLessonSlotRepository implements LessonSlotRepository {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("teacher_id", lessonSlot.getTeacherId());
             parameters.put("student_id", lessonSlot.getStudentId());
-            parameters.put("day", lessonSlot.getDay());
-            parameters.put("time", Time.valueOf(lessonSlot.getTime()));
+            parameters.put("lesson_day", lessonSlot.getDay());
+            parameters.put("lesson_time", Time.valueOf(lessonSlot.getTime()));
 
             Number key = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
             lessonSlot.setId(key.longValue());
@@ -86,7 +85,7 @@ public class JdbcLessonSlotRepository implements LessonSlotRepository {
 
     @Override
     public Optional<LessonSlot> updateLessonSlot(LessonSlot lessonSlot) {
-        String sql = "UPDATE lesson_slot SET teacher_id=?, student_id=?, day=?, time=? WHERE id=?";
+        String sql = "UPDATE lesson_slot SET teacher_id=?, student_id=?, lesson_day=?, lesson_time=? WHERE id=?";
         int rowsAffected = jdbcTemplate.update(sql, lessonSlot.getTeacherId(), lessonSlot.getStudentId(), lessonSlot.getDay(), Time.valueOf(lessonSlot.getTime()), lessonSlot.getId());
 
         if(rowsAffected > 0){

@@ -7,7 +7,9 @@
 ![Thymeleaf](https://img.shields.io/badge/View-Thymeleaf-2563EB?style=flat-square)
 ![H2](https://img.shields.io/badge/Database-H2-2563EB?style=flat-square)
 
-**개인 프로젝트** · 조동휘: 설계·구현
+**개인 프로젝트 · 개선 중** · 조동휘: 설계·구현
+
+Java 17·Gradle 8.13·로컬 H2에서 **기존 테스트 141개 모두 통과**. 기본 프로필 서버 기동과 학생·레슨 시간표 등록 후 목록 조회를 확인했습니다. [검증 조건과 한계](docs/VALIDATION.md)
 
 [설계 포인트](#설계-포인트) · [프로젝트 구조](#project-structure) · [화면 경로](docs/ROUTES.md) · [실행 방법](docs/SETUP.md) · [검증 기록](docs/VALIDATION.md)
 
@@ -112,7 +114,7 @@ Minuet_project/
 - 수정·삭제 동작을 웹 컨트롤러와 화면까지 연결할 필요가 있습니다.
 - 요일·시간 입력 검증과 시간표 중복 검사를 보강할 예정입니다.
 - H2 메모리 DB는 애플리케이션 종료 후 데이터를 유지하지 않습니다.
-- 실행·테스트에서 발견한 초기화 문제는 [검증 기록](docs/VALIDATION.md)에 별도로 정리합니다.
+- H2 초기화 오류를 수정하고 전체 테스트·HTTP 등록·조회를 확인했습니다. [검증 기록](docs/VALIDATION.md)에 수정 전후 결과와 남은 검증 범위를 정리했습니다.
 
 <details>
 <summary>학습 배경</summary>
