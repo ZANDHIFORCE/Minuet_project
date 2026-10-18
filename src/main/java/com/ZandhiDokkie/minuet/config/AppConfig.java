@@ -52,7 +52,7 @@ public class AppConfig {
     @Bean
     public LessonSlotService lessonSlotService()
     {
-        return new LessonSlotService(lessonSlotRepository());
+        return new LessonSlotService(lessonSlotRepository(), teacherRepository(), studentRepository());
     }
     @Bean
     public LessonSlotRepository lessonSlotRepository(){

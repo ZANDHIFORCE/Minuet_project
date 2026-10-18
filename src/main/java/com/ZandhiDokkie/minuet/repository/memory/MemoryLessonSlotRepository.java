@@ -1,6 +1,7 @@
 package com.ZandhiDokkie.minuet.repository.memory;
 import com.ZandhiDokkie.minuet.repository.interfaces.LessonSlotRepository;
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
+import com.ZandhiDokkie.minuet.exception.LessonSlotConflictException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -20,7 +21,7 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
     public MemoryLessonSlotRepository(){
     }
 
-    public void saveToFile(String pathname){
+    public synchronized void saveToFile(String pathname){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -38,7 +39,7 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
         this.loadFromFile("src/main/resources/data/lessonSlots.json");
     }
 
-    public void loadFromFile(String pathname){
+    public synchronized void loadFromFile(String pathname){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -48,7 +49,6 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
             List<LessonSlot> lessonSlotList = mapper.readValue(file, new TypeReference<List<LessonSlot>>() {
             });
             setNextIdFrom(lessonSlotList);
-            clearStore();
             for(LessonSlot l: lessonSlotList){
                 lessonSlots.put(l.getId(), l);
             }
@@ -57,71 +57,87 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
         }
     }
 
-    public void setNextIdFrom(List<LessonSlot> lessonsLotList){
+    public synchronized void setNextIdFrom(List<LessonSlot> lessonsLotList){
         long maxId = lessonsLotList.stream()
                 .mapToLong(l->l.getId())
                 .max().orElse(0L);
         nextId = ++maxId;
     }
 
-    public long generateNextId(){
+    public synchronized long generateNextId(){
         return nextId++;
     }
 
     @Override
-    public Integer getLength() {
+    public synchronized Integer getLength() {
         return lessonSlots.size();
     }
 
     @Override
-    public Optional<LessonSlot> getLessonSlot(Long lessonSlotId) {
-        return Optional.ofNullable(lessonSlots.get(lessonSlotId));
+    public synchronized Optional<LessonSlot> getLessonSlot(Long lessonSlotId) {
+        return Optional.ofNullable(lessonSlots.get(lessonSlotId)).map(this::copy);
     }
 
     @Override
-    public List<LessonSlot> getLessonSlots() {
-        return new ArrayList<LessonSlot>(lessonSlots.values());
+    public synchronized List<LessonSlot> getLessonSlots() {
+        return lessonSlots.values().stream().map(this::copy).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<LessonSlot> createLessonSlot(LessonSlot lessonSlot) {
+    public synchronized Optional<LessonSlot> createLessonSlot(LessonSlot lessonSlot) {
+        ensureAvailable(lessonSlot, null);
         lessonSlot.setId(generateNextId());
-        lessonSlots.put(lessonSlot.getId(), lessonSlot);
-        return Optional.of(lessonSlot);
+        lessonSlots.put(lessonSlot.getId(), copy(lessonSlot));
+        return Optional.of(copy(lessonSlot));
     }
 
     @Override
-    public Optional<LessonSlot> updateLessonSlot(LessonSlot lessonSlot) {
+    public synchronized Optional<LessonSlot> updateLessonSlot(LessonSlot lessonSlot) {
         if(!lessonSlots.containsKey(lessonSlot.getId()))
             return Optional.empty();
-        lessonSlots.put(lessonSlot.getId(), lessonSlot);
-        return Optional.of(lessonSlot);
+        ensureAvailable(lessonSlot, lessonSlot.getId());
+        lessonSlots.put(lessonSlot.getId(), copy(lessonSlot));
+        return Optional.of(copy(lessonSlot));
     }
 
     @Override
-    public Optional<LessonSlot> deleteLessonSlot(Long lessonSlotId) {
-        return Optional.ofNullable(lessonSlots.remove(lessonSlotId));
+    public synchronized Optional<LessonSlot> deleteLessonSlot(Long lessonSlotId) {
+        return Optional.ofNullable(lessonSlots.remove(lessonSlotId)).map(this::copy);
     }
 
     @Override
-    public void clearStore() {
+    public synchronized void clearStore() {
         lessonSlots.clear();
         this.nextId = 1L;
     }
 
     @Override
-    public List<LessonSlot> findByStudentId(Long studentId){
+    public synchronized List<LessonSlot> findByStudentId(Long studentId){
         return lessonSlots.values().stream()
                 .filter(l->l.getStudentId().equals(studentId))
+                .map(this::copy)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<LessonSlot> findByTeacherId(Long teacherId){
+    public synchronized List<LessonSlot> findByTeacherId(Long teacherId){
         return lessonSlots.values().stream()
                 .filter(l->l.getTeacherId().equals(teacherId))
+                .map(this::copy)
                 .collect(Collectors.toList());
     }
 
+    private void ensureAvailable(LessonSlot candidate, Long excludedId) {
+        boolean conflict = lessonSlots.values().stream()
+                .filter(existing -> !Objects.equals(existing.getId(), excludedId))
+                .anyMatch(candidate::overlapsWith);
+        if (conflict) {
+            throw new LessonSlotConflictException();
+        }
+    }
+
+    private LessonSlot copy(LessonSlot source) {
+        return new LessonSlot(source.getId(), source.getTeacherId(), source.getStudentId(), source.getDay(), source.getTime(), source.getDurationMinutes());
+    }
 }
 
