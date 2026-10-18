@@ -67,10 +67,10 @@
 
 ## 코드와 검증
 
-- [서비스](../src/main/java/com/ZandhiDokkie/minuet/service/LessonSlotService.java): 입력·참조·종료 시각 검증.
-- [JDBC 저장소](../src/main/java/com/ZandhiDokkie/minuet/repository/jdbc/JdbcLessonSlotRepository.java): 행 잠금, 구간 조회, 트랜잭션.
-- [도메인](../src/main/java/com/ZandhiDokkie/minuet/domain/LessonSlot.java): 수업 길이와 메모리 구간 판정, 종료 표시.
-- [등록 통합 테스트](../src/test/java/com/ZandhiDokkie/minuet/integration/LessonSlotRegistrationTest.java): 실제 H2·MVC, 부분 겹침·포함·경계·동시 등록·동시 수정.
-- [메모리 저장소 테스트](../src/test/java/com/ZandhiDokkie/minuet/repository/MemoryLessonSlotRepositoryTest.java): 구간 겹침, 수정 거부 후 상태 유지, 파일 복원.
+- [서비스](../src/main/java/com/zandhidokkie/minuet/service/LessonSlotService.java): 입력·참조·종료 시각 검증.
+- [JDBC 저장소](../src/main/java/com/zandhidokkie/minuet/repository/jdbc/JdbcLessonSlotRepository.java): 행 잠금, 구간 조회, 트랜잭션.
+- [도메인](../src/main/java/com/zandhidokkie/minuet/domain/LessonSlot.java): 수업 길이와 메모리 구간 판정, 종료 표시.
+- [등록 통합 테스트](../src/test/java/com/zandhidokkie/minuet/integration/LessonSlotRegistrationTest.java): 실제 H2·MVC, 부분 겹침·포함·경계·동시 등록·동시 수정.
+- [메모리 저장소 테스트](../src/test/java/com/zandhidokkie/minuet/repository/MemoryLessonSlotRepositoryTest.java): 구간 겹침, 수정 거부 후 상태 유지, 파일 복원.
 
 수정·삭제 웹 화면, 인증·권한, 영속 DB 마이그레이션, 운영 부하와 다른 DB 엔진 검증은 후속 범위입니다.

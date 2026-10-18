@@ -49,3 +49,16 @@ sh gradlew bootRun
 ## 해결한 초기화 문제
 
 기존 `lesson_slot`의 예약어 컬럼과 마지막 쉼표 때문에 서버 기동이 실패했습니다. `lesson_day`, `lesson_time`으로 SQL·매핑을 맞추고 구문을 수정했습니다. 기존 영속 DB의 컬럼 마이그레이션은 제공하지 않으며 이 실행 안내는 새 H2 메모리 DB 기준입니다.
+
+## 코드와 화면 파일
+
+기본 패키지는 `com.zandhidokkie.minuet`입니다. 저장소 인터페이스는 `repository/`에, 구현체는 `repository/jdbc/`·`repository/memory/`에 있습니다.
+
+| 화면 | 등록 템플릿 | 목록 템플릿 |
+| :--- | :--- | :--- |
+| 학생 | [students/create.html](../src/main/resources/templates/students/create.html) | [students/list.html](../src/main/resources/templates/students/list.html) |
+| 강사 | [teachers/create.html](../src/main/resources/templates/teachers/create.html) | [teachers/list.html](../src/main/resources/templates/teachers/list.html) |
+| 레슨 기록 | [lesson_info/create.html](../src/main/resources/templates/lesson_info/create.html) | [lesson_info/list.html](../src/main/resources/templates/lesson_info/list.html) |
+| 레슨 시간표 | [lesson_slots/create.html](../src/main/resources/templates/lesson_slots/create.html) | [lesson_slots/list.html](../src/main/resources/templates/lesson_slots/list.html) |
+
+웹 경로는 기존 `/Student/...`·`/Teacher/...`·`/LessonInfo/...`·`/LessonSlot/...`를 사용합니다.

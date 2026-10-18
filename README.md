@@ -51,7 +51,7 @@ flowchart TD
 
 기본 구성은 **JDBC**입니다. 저장 방식은 설정 코드를 통해 교체하며, 런타임 자동 전환 기능은 아닙니다.
 
-[의존성 구성](src/main/java/com/ZandhiDokkie/minuet/config/AppConfig.java) · [저장소 인터페이스](src/main/java/com/ZandhiDokkie/minuet/repository/interfaces) · [JDBC 구현](src/main/java/com/ZandhiDokkie/minuet/repository/jdbc)
+[의존성 구성](src/main/java/com/zandhidokkie/minuet/config/AppConfig.java) · [저장소 인터페이스](src/main/java/com/zandhidokkie/minuet/repository) · [JDBC 구현](src/main/java/com/zandhidokkie/minuet/repository/jdbc)
 
 ### 02. 레슨 기록과 반복 시간표 구분
 
@@ -65,7 +65,7 @@ erDiagram
     TEACHER ||--o{ LESSON_SLOT : schedules
 ```
 
-[도메인 모델](src/main/java/com/ZandhiDokkie/minuet/domain) · [DB 스키마](src/main/resources/schema.sql)
+[도메인 모델](src/main/java/com/zandhidokkie/minuet/domain) · [DB 스키마](src/main/resources/schema.sql)
 
 ### 03. 계층별 동작과 오류 시나리오 테스트
 
@@ -73,10 +73,10 @@ erDiagram
 
 | 검증 코드 | 확인하려는 동작 |
 | :--- | :--- |
-| [서비스](src/test/java/com/ZandhiDokkie/minuet/service/StudentServiceTest.java) | 학생 등록·조회·수정·삭제 |
-| [저장소](src/test/java/com/ZandhiDokkie/minuet/repository) | 메모리·JDBC 데이터 접근 |
-| [웹](src/test/java/com/ZandhiDokkie/minuet/controller) | 요청과 화면 처리 |
-| [오류](src/test/java/com/ZandhiDokkie/minuet/integration/ErrorScenarioTest.java) | 존재하지 않는 데이터 처리 |
+| [서비스](src/test/java/com/zandhidokkie/minuet/service/StudentServiceTest.java) | 학생 등록·조회·수정·삭제 |
+| [저장소](src/test/java/com/zandhidokkie/minuet/repository) | 메모리·JDBC 데이터 접근 |
+| [웹](src/test/java/com/zandhidokkie/minuet/controller) | 요청과 화면 처리 |
+| [오류](src/test/java/com/zandhidokkie/minuet/integration/ErrorScenarioTest.java) | 존재하지 않는 데이터 처리 |
 
 실제 실행 결과와 현재 막히는 부분은 [검증 기록](docs/VALIDATION.md)을 참고하세요.
 
@@ -88,13 +88,12 @@ erDiagram
 
 ```text
 Minuet_project/
-├── src/main/java/com/ZandhiDokkie/minuet/  # 애플리케이션 코드
+├── src/main/java/com/zandhidokkie/minuet/  # 애플리케이션 코드
 │   ├── config/  # 저장소 구현체 연결
 │   ├── controller/  # 등록·목록 화면 요청
 │   ├── service/  # 학생·강사·레슨 처리
 │   ├── domain/  # 레슨 기록·반복 시간표 모델
-│   └── repository/  # 데이터 접근 계층
-│       ├── interfaces/  # 저장소 인터페이스
+│   └── repository/  # 저장소 인터페이스·구현체
 │       ├── jdbc/  # JDBC 구현
 │       └── memory/  # 메모리 구현
 ├── src/main/resources/  # 설정·화면·DB 초기화
@@ -108,7 +107,7 @@ Minuet_project/
 
 - [실행 방법](docs/SETUP.md): JDK 17, Gradle Wrapper, H2 초기화와 데이터 유지 범위
 - [화면 경로](docs/ROUTES.md): 실제 컨트롤러의 대소문자를 반영한 URL
-- [서비스 계층](src/main/java/com/ZandhiDokkie/minuet/service): 비즈니스 처리
+- [서비스 계층](src/main/java/com/zandhidokkie/minuet/service): 비즈니스 처리
 - [화면 템플릿](src/main/resources/templates): Thymeleaf 기반 화면
 
 ## 현재 한계와 다음 개선
