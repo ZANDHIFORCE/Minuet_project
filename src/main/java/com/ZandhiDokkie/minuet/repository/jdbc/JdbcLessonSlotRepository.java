@@ -2,6 +2,8 @@ package com.ZandhiDokkie.minuet.repository.jdbc;
 
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
 import com.ZandhiDokkie.minuet.repository.interfaces.LessonSlotRepository;
+import com.ZandhiDokkie.minuet.exception.LessonSlotConflictException;
+import org.springframework.dao.DuplicateKeyException;
 
 import javax.sql.DataSource;
 
@@ -78,15 +80,20 @@ public class JdbcLessonSlotRepository implements LessonSlotRepository {
             lessonSlot.setId(key.longValue());
             return Optional.of(lessonSlot);
             
-        }catch(Exception e){
-            throw new RuntimeException(e);
+        }catch(DuplicateKeyException e){
+            throw new LessonSlotConflictException(e);
         }
     }
 
     @Override
     public Optional<LessonSlot> updateLessonSlot(LessonSlot lessonSlot) {
         String sql = "UPDATE lesson_slot SET teacher_id=?, student_id=?, lesson_day=?, lesson_time=? WHERE id=?";
-        int rowsAffected = jdbcTemplate.update(sql, lessonSlot.getTeacherId(), lessonSlot.getStudentId(), lessonSlot.getDay(), Time.valueOf(lessonSlot.getTime()), lessonSlot.getId());
+        int rowsAffected;
+        try {
+            rowsAffected = jdbcTemplate.update(sql, lessonSlot.getTeacherId(), lessonSlot.getStudentId(), lessonSlot.getDay(), Time.valueOf(lessonSlot.getTime()), lessonSlot.getId());
+        } catch (DuplicateKeyException e) {
+            throw new LessonSlotConflictException(e);
+        }
 
         if(rowsAffected > 0){
             return Optional.of(lessonSlot);

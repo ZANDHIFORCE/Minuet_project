@@ -1,11 +1,14 @@
 package com.ZandhiDokkie.minuet.repository;
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
 import com.ZandhiDokkie.minuet.repository.memory.MemoryLessonSlotRepository;
+import com.ZandhiDokkie.minuet.exception.LessonSlotConflictException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -50,16 +53,13 @@ public class MemoryLessonSlotRepositoryTest {
     void getLessonSlotsTest(){
         //given
         lessonSlotRepository.createLessonSlot(lessonSlot1);
-        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot2);
         //when
         List<LessonSlot> lessonSlotList = lessonSlotRepository.getLessonSlots();
         //then
-        for(LessonSlot l:lessonSlotList){
-            if(l.getId().equals(lessonSlot1.getId()))
-                Assertions.assertEquals(lessonSlot1.toString(), l.toString());
-            else
-                Assertions.assertEquals(lessonSlot1.toString(), l.toString());
-        }
+        Assertions.assertEquals(2, lessonSlotList.size());
+        Assertions.assertTrue(lessonSlotList.stream().anyMatch(l -> l.toString().equals(lessonSlot1.toString())));
+        Assertions.assertTrue(lessonSlotList.stream().anyMatch(l -> l.toString().equals(lessonSlot2.toString())));
     }
 
     @Test
@@ -135,4 +135,42 @@ public class MemoryLessonSlotRepositoryTest {
         Assertions.assertEquals(1, lessonSlotList.size());
     }
 
+    @Test
+    void rejectsTeacherAndStudentConflicts() {
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        LessonSlot sameTeacher = new LessonSlot(null, 1L, 3L, 0, LocalTime.of(13, 0));
+        LessonSlot sameStudent = new LessonSlot(null, 2L, 2L, 0, LocalTime.of(13, 0));
+        Assertions.assertThrows(LessonSlotConflictException.class, () -> lessonSlotRepository.createLessonSlot(sameTeacher));
+        Assertions.assertThrows(LessonSlotConflictException.class, () -> lessonSlotRepository.createLessonSlot(sameStudent));
+        Assertions.assertEquals(1, lessonSlotRepository.getLength());
+    }
+
+    @Test
+    void rejectedUpdateAndMutatedSnapshotsDoNotChangeStoredValues() {
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        lessonSlotRepository.createLessonSlot(lessonSlot2);
+        lessonSlot1.setDay(5);
+        Assertions.assertEquals(0, lessonSlotRepository.getLessonSlot(lessonSlot1.getId()).orElseThrow().getDay());
+        LessonSlot snapshot = lessonSlotRepository.getLessonSlot(lessonSlot2.getId()).orElseThrow();
+        snapshot.setDay(0);
+        Assertions.assertThrows(LessonSlotConflictException.class, () -> lessonSlotRepository.updateLessonSlot(snapshot));
+        Assertions.assertEquals(2, lessonSlotRepository.getLessonSlot(lessonSlot2.getId()).orElseThrow().getDay());
+        LessonSlot listItem = lessonSlotRepository.getLessonSlots().get(0);
+        Integer originalDay = listItem.getDay();
+        listItem.setDay(6);
+        Assertions.assertEquals(originalDay, lessonSlotRepository.getLessonSlot(listItem.getId()).orElseThrow().getDay());
+    }
+
+    @Test
+    void fileReloadPreservesIdsBeforeTheNextRegistration(@TempDir Path tempDir) {
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        String file = tempDir.resolve("slots.json").toString();
+        lessonSlotRepository.saveToFile(file);
+        MemoryLessonSlotRepository reloaded = new MemoryLessonSlotRepository();
+        reloaded.loadFromFile(file);
+        reloaded.createLessonSlot(lessonSlot2);
+        Assertions.assertNotEquals(lessonSlot1.getId(), lessonSlot2.getId());
+        Assertions.assertEquals(2, reloaded.getLength());
+        Assertions.assertEquals(0, reloaded.getLessonSlot(lessonSlot1.getId()).orElseThrow().getDay());
+    }
 }

@@ -1,6 +1,7 @@
 package com.ZandhiDokkie.minuet.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalTime;
 
@@ -10,6 +11,7 @@ public class LessonSlot {
     private Long studentId;
     private Integer day;
     @JsonFormat(pattern="HH:mm")
+    @DateTimeFormat(pattern="HH:mm")
     private LocalTime time;
 
     public LessonSlot() {}

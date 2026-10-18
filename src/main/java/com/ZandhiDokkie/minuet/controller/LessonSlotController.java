@@ -1,56 +1,68 @@
 package com.ZandhiDokkie.minuet.controller;
 
 import com.ZandhiDokkie.minuet.domain.LessonSlot;
+import com.ZandhiDokkie.minuet.exception.InvalidLessonSlotException;
+import com.ZandhiDokkie.minuet.exception.LessonSlotConflictException;
 import com.ZandhiDokkie.minuet.service.LessonSlotService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalTime;
-import java.util.List;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class LessonSlotController {
-    public final LessonSlotService lessonSlotService;
+    private static final String FORM = "LessonSlot/createLessonSlotForm";
+    private final LessonSlotService lessonSlotService;
 
-    @Autowired
-    public LessonSlotController(LessonSlotService lessonSlotService){
+    public LessonSlotController(LessonSlotService lessonSlotService) {
         this.lessonSlotService = lessonSlotService;
     }
 
+    @InitBinder("lessonSlot")
+    public void configureBinding(WebDataBinder binder) {
+        // Registration must never bind an existing ID from a submitted form.
+        binder.setAllowedFields("teacherId", "studentId", "day", "time");
+    }
 
     @GetMapping("/LessonSlot/new")
-    public String crateLessonSlotForm(){
-        return "LessonSlot/createLessonSlotForm";
+    public String createLessonSlotForm(Model model) {
+        model.addAttribute("lessonSlot", new LessonSlot());
+        return FORM;
     }
 
     @PostMapping("/LessonSlot/new")
-    public String registerLessonSlotForm(@RequestParam Long teacherId,
-                                         @RequestParam Long studentId,
-                                         @RequestParam Integer day,
-                                         @RequestParam LocalTime time){
-        try{
-            LessonSlot lessonSlot = new LessonSlot(null, teacherId, studentId, day, time);
-            lessonSlotService.registerLessonSlot(lessonSlot);
-            return "redirect:/";
-        }catch (Exception e){
-            System.out.println("Error occurred: " + e.getMessage());
-            e.printStackTrace();
-            return "LessonSlot/createLessonSlotForm";
+    public String registerLessonSlotForm(@ModelAttribute("lessonSlot") LessonSlot lessonSlot,
+                                         BindingResult errors,
+                                         HttpServletResponse response,
+                                         RedirectAttributes redirectAttributes) {
+        if (errors.hasErrors()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return FORM;
         }
-
+        try {
+            lessonSlotService.registerLessonSlot(lessonSlot);
+        } catch (InvalidLessonSlotException e) {
+            e.getFieldErrors().forEach((field, message) -> errors.rejectValue(field, "invalid", message));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return FORM;
+        } catch (LessonSlotConflictException e) {
+            errors.reject("conflict", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            return FORM;
+        }
+        redirectAttributes.addFlashAttribute("successMessage", "레슨 시간표를 등록했습니다.");
+        return "redirect:/LessonSlot/list";
     }
 
-    @GetMapping("LessonSlot/list")
-    public String lessonSlotList(Model model){
-        List<LessonSlot> lessonSlotList = lessonSlotService.getAllLessonSlots();
-        model.addAttribute("lessonSlotList", lessonSlotList);
+    @GetMapping("/LessonSlot/list")
+    public String lessonSlotList(Model model) {
+        model.addAttribute("lessonSlotList", lessonSlotService.getAllLessonSlots());
         return "LessonSlot/lessonSlotList";
     }
-
-
-
 }
