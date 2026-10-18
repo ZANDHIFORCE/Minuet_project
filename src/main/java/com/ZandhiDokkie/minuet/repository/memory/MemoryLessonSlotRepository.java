@@ -130,17 +130,14 @@ public class MemoryLessonSlotRepository implements LessonSlotRepository {
     private void ensureAvailable(LessonSlot candidate, Long excludedId) {
         boolean conflict = lessonSlots.values().stream()
                 .filter(existing -> !Objects.equals(existing.getId(), excludedId))
-                .anyMatch(existing -> Objects.equals(existing.getDay(), candidate.getDay())
-                        && Objects.equals(existing.getTime(), candidate.getTime())
-                        && (Objects.equals(existing.getTeacherId(), candidate.getTeacherId())
-                        || Objects.equals(existing.getStudentId(), candidate.getStudentId())));
+                .anyMatch(candidate::overlapsWith);
         if (conflict) {
             throw new LessonSlotConflictException();
         }
     }
 
     private LessonSlot copy(LessonSlot source) {
-        return new LessonSlot(source.getId(), source.getTeacherId(), source.getStudentId(), source.getDay(), source.getTime());
+        return new LessonSlot(source.getId(), source.getTeacherId(), source.getStudentId(), source.getDay(), source.getTime(), source.getDurationMinutes());
     }
 }
 

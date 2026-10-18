@@ -15,7 +15,7 @@
 <body>
 <h1>레슨 시간표 등록</h1>
 <p><a href="/">홈으로</a> | <a href="/LessonSlot/list">시간표 목록</a></p>
-<p>같은 요일·시작 시각에 선생님과 학생은 각각 하나의 레슨만 등록할 수 있습니다.</p>
+<p>같은 요일에 선생님이나 학생의 수업 시간이 겹치면 등록할 수 없습니다. 앞 수업이 끝나는 시각에는 다음 수업을 시작할 수 있습니다.</p>
 <form th:action="@{/LessonSlot/new}" method="post" th:object="${lessonSlot}">
     <div class="error-summary" role="alert" th:if="${#fields.hasAnyErrors()}">
         <strong>입력 내용을 확인해 주세요.</strong>
@@ -53,6 +53,12 @@
             <label for="time">시작 시각</label>
             <input type="time" th:field="*{time}" th:errorclass="field-error" step="60" required aria-describedby="timeError">
             <span id="timeError" class="error" th:errors="*{time}"></span>
+        </p>
+        <p>
+            <label for="durationMinutes">수업 길이 (분)</label>
+            <input type="number" th:field="*{durationMinutes}" th:errorclass="field-error" min="1" max="1440" step="1" required aria-describedby="durationMinutesError durationHelp">
+            <span id="durationMinutesError" class="error" th:errors="*{durationMinutes}"></span>
+            <small id="durationHelp">1~1440분, 같은 요일의 24:00까지 끝나는 수업을 등록할 수 있습니다.</small>
         </p>
         <p><button type="submit">등록</button> <a href="/LessonSlot/new">새로 입력</a></p>
     </fieldset>

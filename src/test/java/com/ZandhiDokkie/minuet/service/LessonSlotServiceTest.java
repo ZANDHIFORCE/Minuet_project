@@ -145,4 +145,15 @@ public class LessonSlotServiceTest {
         Assertions.assertThrows(InvalidLessonSlotException.class, () -> lessonSlotService.registerLessonSlot(slot1));
         Assertions.assertEquals(0, lessonSlotService.getLessonSlotCounts());
     }
+    @Test
+    void rejectsInvalidLengthAndCrossingMidnightWithoutSaving() {
+        slot1.setDurationMinutes(null);
+        Assertions.assertThrows(InvalidLessonSlotException.class, () -> lessonSlotService.registerLessonSlot(slot1));
+        slot1.setDurationMinutes(0);
+        Assertions.assertThrows(InvalidLessonSlotException.class, () -> lessonSlotService.registerLessonSlot(slot1));
+        slot1.setDurationMinutes(31);
+        slot1.setTime(LocalTime.of(23, 30));
+        Assertions.assertThrows(InvalidLessonSlotException.class, () -> lessonSlotService.registerLessonSlot(slot1));
+        Assertions.assertEquals(0, lessonSlotService.getLessonSlotCounts());
+    }
 }

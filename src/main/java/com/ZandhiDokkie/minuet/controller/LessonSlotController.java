@@ -26,8 +26,9 @@ public class LessonSlotController {
 
     @InitBinder("lessonSlot")
     public void configureBinding(WebDataBinder binder) {
-        // Registration must never bind an existing ID from a submitted form.
-        binder.setAllowedFields("teacherId", "studentId", "day", "time");
+        // 등록 요청에서 기존 레슨 id를 변경하지 못하도록 제한
+        binder.setAllowedFields("teacherId", "studentId", "day", "time", "durationMinutes");
+        binder.setRequiredFields("teacherId", "studentId", "day", "time", "durationMinutes");
     }
 
     @GetMapping("/LessonSlot/new")

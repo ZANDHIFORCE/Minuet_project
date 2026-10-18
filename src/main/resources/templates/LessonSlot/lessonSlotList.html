@@ -17,7 +17,9 @@
                 <th>선생님 ID</th>
                 <th>학생 ID</th>
                 <th>요일</th>
-                <th>시간</th>
+                <th>시작</th>
+                <th>종료</th>
+                <th>수업 길이 (분)</th>
             </tr>
         </thead>
         <tbody>
@@ -37,6 +39,8 @@
                     </span>
                 </td>
                 <td align="center" th:text="${lessonSlot.time}"></td>
+                <td align="center" th:text="${lessonSlot.endTimeLabel}"></td>
+                <td align="center" th:text="${lessonSlot.durationMinutes}"></td>
             </tr>
         </tbody>
     </table>

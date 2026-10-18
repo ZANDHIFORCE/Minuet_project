@@ -173,4 +173,17 @@ public class MemoryLessonSlotRepositoryTest {
         Assertions.assertEquals(2, reloaded.getLength());
         Assertions.assertEquals(0, reloaded.getLessonSlot(lessonSlot1.getId()).orElseThrow().getDay());
     }
+    @Test
+    void partialOverlapIsRejectedButAdjacentLessonIsAllowed() {
+        lessonSlot1.setDurationMinutes(45);
+        lessonSlotRepository.createLessonSlot(lessonSlot1);
+        LessonSlot partial = new LessonSlot(null, 1L, 3L, 0, LocalTime.of(13, 30), 30);
+        Assertions.assertThrows(LessonSlotConflictException.class, () -> lessonSlotRepository.createLessonSlot(partial));
+        partial.setTime(LocalTime.of(13, 45));
+        lessonSlotRepository.createLessonSlot(partial);
+        LessonSlot updated = lessonSlotRepository.getLessonSlot(lessonSlot1.getId()).orElseThrow();
+        updated.setDurationMinutes(46);
+        Assertions.assertThrows(LessonSlotConflictException.class, () -> lessonSlotRepository.updateLessonSlot(updated));
+        Assertions.assertEquals(45, lessonSlotRepository.getLessonSlot(lessonSlot1.getId()).orElseThrow().getDurationMinutes());
+    }
 }

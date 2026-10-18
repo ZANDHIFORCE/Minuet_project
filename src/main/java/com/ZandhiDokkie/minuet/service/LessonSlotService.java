@@ -79,6 +79,11 @@ public class LessonSlotService {
         } else if (slot.getTime().getSecond() != 0 || slot.getTime().getNano() != 0) {
             errors.put("time", "시작 시각은 분 단위(HH:mm)로 입력해 주세요.");
         }
+        if (slot.getDurationMinutes() == null || slot.getDurationMinutes() < 1 || slot.getDurationMinutes() > 1440) {
+            errors.put("durationMinutes", "수업 길이는 1~1440분의 정수로 입력해 주세요.");
+        } else if (slot.getTime() != null && slot.endMinute() > 1440) {
+            errors.put("durationMinutes", "수업은 같은 요일의 24:00까지 끝나야 합니다.");
+        }
         if (!errors.isEmpty()) {
             throw new InvalidLessonSlotException(errors);
         }
@@ -88,7 +93,7 @@ public class LessonSlotService {
         try {
             return operation.get();
         } catch (DataIntegrityViolationException e) {
-            // A parent can be deleted between validation and insert; the FK remains authoritative.
+            // 검증 후 강사나 학생이 삭제된 경우 다시 확인
             validate(slot);
             throw e;
         }

@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,6 +87,7 @@ class LessonSlotRegistrationTest {
         form.set("studentId", studentA.toString());
         form.set("day", "0");
         form.set("time", "13:00");
+        form.set("durationMinutes", "60");
         return form;
     }
 
@@ -119,7 +121,7 @@ class LessonSlotRegistrationTest {
         mvc.perform(post("/LessonSlot/new"))
                 .andExpect(status().isBadRequest())
                 .andExpect(view().name("LessonSlot/createLessonSlotForm"))
-                .andExpect(model().attributeHasFieldErrors("lessonSlot", "teacherId", "studentId", "day", "time"));
+                .andExpect(model().attributeHasFieldErrors("lessonSlot", "teacherId", "studentId", "day", "time", "durationMinutes"));
         assertEquals(0, slots.getLength());
     }
 
@@ -184,6 +186,7 @@ class LessonSlotRegistrationTest {
         MultiValueMap<String, String> form = validForm();
         form.set("day", Integer.toString(day));
         form.set("time", time);
+        form.set("durationMinutes", "1");
         mvc.perform(post("/LessonSlot/new").params(form)).andExpect(status().is3xxRedirection());
         assertEquals(1, slots.getLength());
         assertEquals(LocalTime.parse(time), slots.getLessonSlots().get(0).getTime());
@@ -209,7 +212,7 @@ class LessonSlotRegistrationTest {
         service.registerLessonSlot(slot(teacherA, studentA, 0, "13:00"));
         service.registerLessonSlot(slot(teacherB, studentB, 0, "13:00"));
         service.registerLessonSlot(slot(teacherA, studentA, 1, "13:00"));
-        service.registerLessonSlot(slot(teacherA, studentA, 0, "13:01"));
+        service.registerLessonSlot(slot(teacherA, studentA, 0, "14:00"));
         assertEquals(4, slots.getLength());
     }
 
@@ -242,21 +245,26 @@ class LessonSlotRegistrationTest {
         LessonSlot first = slot(teacherA, studentA, 0, "13:00");
         LessonSlot second = slot(conflict.equals("student") ? teacherB : teacherA,
                 conflict.equals("teacher") ? studentB : studentA, 0, "13:00");
+        concurrentWrites(() -> service.registerLessonSlot(first), () -> service.registerLessonSlot(second), 1, 1);
+    }
+
+    private void concurrentWrites(Supplier<LessonSlot> first, Supplier<LessonSlot> second,
+                                  int expectedSuccesses, int expectedRows) throws Exception {
         CountDownLatch ready = new CountDownLatch(2);
         CountDownLatch start = new CountDownLatch(1);
         ExecutorService pool = Executors.newFixedThreadPool(2);
         try {
             List<Future<Boolean>> results = List.of(
-                    pool.submit(() -> registerTogether(first, ready, start)),
-                    pool.submit(() -> registerTogether(second, ready, start)));
+                    pool.submit(() -> writeTogether(first, ready, start)),
+                    pool.submit(() -> writeTogether(second, ready, start)));
             assertTrue(ready.await(10, TimeUnit.SECONDS));
             start.countDown();
             int successes = 0;
             for (Future<Boolean> result : results) {
                 if (result.get(10, TimeUnit.SECONDS)) successes++;
             }
-            assertEquals(1, successes);
-            assertEquals(1, slots.getLength());
+            assertEquals(expectedSuccesses, successes);
+            if (expectedRows >= 0) assertEquals(expectedRows, slots.getLength());
         } finally {
             start.countDown();
             pool.shutdownNow();
@@ -264,14 +272,150 @@ class LessonSlotRegistrationTest {
         }
     }
 
-    private boolean registerTogether(LessonSlot slot, CountDownLatch ready, CountDownLatch start) throws Exception {
+    private boolean writeTogether(Supplier<LessonSlot> operation, CountDownLatch ready, CountDownLatch start) throws Exception {
         ready.countDown();
         if (!start.await(10, TimeUnit.SECONDS)) throw new IllegalStateException("Start latch timed out");
         try {
-            service.registerLessonSlot(slot);
+            operation.get();
             return true;
         } catch (LessonSlotConflictException expected) {
             return false;
         }
+    }
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "-1", "1441", "1.5", "abc", "2147483648", ""})
+    void rejectsInvalidDuration(String duration) throws Exception {
+        MultiValueMap<String, String> form = validForm();
+        form.set("durationMinutes", duration);
+        mvc.perform(post("/LessonSlot/new").params(form)).andExpect(status().isBadRequest())
+                .andExpect(model().attributeHasFieldErrors("lessonSlot", "durationMinutes"));
+        assertEquals(0, slots.getLength());
+    }
+
+    @Test
+    void requiresDurationEvenWhenTheFormInitiallyShowsSixtyMinutes() throws Exception {
+        MultiValueMap<String, String> form = validForm();
+        form.remove("durationMinutes");
+        mvc.perform(post("/LessonSlot/new").params(form)).andExpect(status().isBadRequest())
+                .andExpect(model().attributeHasFieldErrors("lessonSlot", "durationMinutes"));
+        assertEquals(0, slots.getLength());
+    }
+
+    @Test
+    void savesDurationAndDisplaysEndTime() throws Exception {
+        MultiValueMap<String, String> form = validForm();
+        form.set("durationMinutes", "45");
+        mvc.perform(post("/LessonSlot/new").params(form)).andExpect(status().is3xxRedirection());
+        LessonSlot saved = slots.getLessonSlots().get(0);
+        assertEquals(45, saved.getDurationMinutes());
+        assertEquals("13:45", saved.getEndTimeLabel());
+        mvc.perform(get("/LessonSlot/list")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("13:45")));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"23:30,30,302", "23:30,31,400", "00:00,1440,302"})
+    void checksEndOfDay(String startTime, int duration, int expectedStatus) throws Exception {
+        MultiValueMap<String, String> form = validForm();
+        form.set("time", startTime);
+        form.set("durationMinutes", Integer.toString(duration));
+        mvc.perform(post("/LessonSlot/new").params(form)).andExpect(status().is(expectedStatus));
+        if (expectedStatus == 302) {
+            assertEquals("24:00", slots.getLessonSlots().get(0).getEndTimeLabel());
+            mvc.perform(get("/LessonSlot/list")).andExpect(content().string(containsString("24:00")));
+        } else {
+            assertEquals(0, slots.getLength());
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({"12:00,60,false", "12:30,30,false", "14:00,30,false", "12:30,31,true",
+            "13:59,1,true", "13:30,15,true", "12:00,180,true", "13:00,1,true"})
+    void checksPartialAndContainedIntervalsWithAdjacentLessonsAllowed(String startTime, int duration, boolean conflict) {
+        service.registerLessonSlot(slot(teacherA, studentA, 0, "13:00"));
+        LessonSlot candidate = new LessonSlot(null, teacherA, studentB, 0, LocalTime.parse(startTime), duration);
+        if (conflict) {
+            assertThrows(LessonSlotConflictException.class, () -> service.registerLessonSlot(candidate));
+            assertEquals(1, slots.getLength());
+        } else {
+            service.registerLessonSlot(candidate);
+            assertEquals(2, slots.getLength());
+        }
+    }
+
+    @Test
+    void rejectsStudentOverlapWithAnotherTeacherAndPreservesForm() throws Exception {
+        service.registerLessonSlot(slot(teacherA, studentA, 0, "13:00"));
+        MultiValueMap<String, String> form = validForm();
+        form.set("teacherId", teacherB.toString());
+        form.set("time", "13:30");
+        form.set("durationMinutes", "45");
+        mvc.perform(post("/LessonSlot/new").params(form)).andExpect(status().isConflict())
+                .andExpect(content().string(containsString("시간이 겹치는 레슨")))
+                .andExpect(content().string(containsString("value=\"45\"")))
+                .andExpect(content().string(containsString("value=\"13:30\"")));
+        assertEquals(1, slots.getLength());
+    }
+
+    @Test
+    void lengthChangeCannotOverlapAndRejectedUpdatePreservesDuration() {
+        LessonSlot first = new LessonSlot(null, teacherA, studentA, 0, LocalTime.of(13, 0), 30);
+        service.registerLessonSlot(first);
+        service.registerLessonSlot(slot(teacherA, studentB, 0, "13:30"));
+        first.setDurationMinutes(31);
+        assertThrows(LessonSlotConflictException.class, () -> service.editLessonSlot(first));
+        assertEquals(30, slots.getLessonSlot(first.getId()).orElseThrow().getDurationMinutes());
+        first.setDurationMinutes(15);
+        service.editLessonSlot(first);
+        assertEquals(15, slots.getLessonSlot(first.getId()).orElseThrow().getDurationMinutes());
+        first.setDurationMinutes(0);
+        assertThrows(InvalidLessonSlotException.class, () -> service.editLessonSlot(first));
+        assertEquals(15, slots.getLessonSlot(first.getId()).orElseThrow().getDurationMinutes());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"teacher", "student", "both"})
+    void simultaneousOverlappingStartsSaveOnlyOne(String conflict) throws Exception {
+        LessonSlot first = slot(teacherA, studentA, 0, "13:00");
+        LessonSlot second = slot(conflict.equals("student") ? teacherB : teacherA,
+                conflict.equals("teacher") ? studentB : studentA, 0, "13:30");
+        concurrentWrites(() -> service.registerLessonSlot(first), () -> service.registerLessonSlot(second), 1, 1);
+    }
+
+    @Test
+    void simultaneousAdjacentRequestsBothSucceed() throws Exception {
+        concurrentWrites(() -> service.registerLessonSlot(slot(teacherA, studentA, 0, "13:00")),
+                () -> service.registerLessonSlot(slot(teacherA, studentA, 0, "14:00")), 2, 2);
+    }
+
+    @Test
+    void simultaneousExtensionAndRegistrationCannotBothSucceed() throws Exception {
+        LessonSlot first = service.registerLessonSlot(new LessonSlot(null, teacherA, studentA, 0, LocalTime.of(13, 0), 30));
+        first.setDurationMinutes(60);
+        concurrentWrites(() -> service.editLessonSlot(first),
+                () -> service.registerLessonSlot(slot(teacherA, studentB, 0, "13:45")), 1, -1);
+        LessonSlot saved = slots.getLessonSlot(first.getId()).orElseThrow();
+        assertEquals(saved.getDurationMinutes() == 60 ? 1 : 2, slots.getLength());
+    }
+
+    @Test
+    void simultaneousUpdatesToOverlappingIntervalsSaveOnlyOneChange() throws Exception {
+        LessonSlot first = service.registerLessonSlot(slot(teacherA, studentA, 0, "12:00"));
+        LessonSlot second = service.registerLessonSlot(slot(teacherA, studentB, 0, "15:00"));
+        first.setTime(LocalTime.of(13, 0));
+        second.setTime(LocalTime.of(13, 30));
+        concurrentWrites(() -> service.editLessonSlot(first), () -> service.editLessonSlot(second), 1, 2);
+        List<LessonSlot> saved = slots.getLessonSlots();
+        assertFalse(saved.get(0).overlapsWith(saved.get(1)));
+    }
+
+    @Test
+    void databaseRejectsInvalidDurationAndMidnightOverflow() {
+        String sql = "INSERT INTO lesson_slot (teacher_id, student_id, lesson_day, lesson_time, duration_minutes) VALUES (?, ?, ?, ?, ?)";
+        assertThrows(DataIntegrityViolationException.class,
+                () -> jdbc.update(sql, teacherA, studentA, 0, Time.valueOf("13:00:00"), 0));
+        assertThrows(DataIntegrityViolationException.class,
+                () -> jdbc.update(sql, teacherA, studentA, 0, Time.valueOf("23:30:00"), 31));
+        assertEquals(0, slots.getLength());
     }
 }

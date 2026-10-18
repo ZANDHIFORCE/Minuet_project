@@ -39,7 +39,7 @@ public class JdbcLessonSlotRepositoryTest {
 
     @BeforeEach
     void beforeEach(){
-        // Use generated parent IDs: tests must not depend on seed data or execution order.
+        // 테스트마다 강사와 학생을 생성해 실제 id 사용
         Teacher teacher = teacherRepository.createTeacher(new Teacher(null, "Test Teacher", "Piano")).orElseThrow();
         Student student = studentRepository.createStudent(new Student(null, "Test Student", 0, 8)).orElseThrow();
         lessonSlot1 = new LessonSlot(null, teacher.getId(), student.getId(), 0, LocalTime.of(13, 0));
