@@ -17,8 +17,8 @@
 [설계 포인트](#설계-포인트) · [프로젝트 구조](#project-structure) · [화면 경로](docs/ROUTES.md) · [실행 방법](docs/SETUP.md) · [검증 기록](docs/VALIDATION.md)
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/assets/overview-mobile.svg">
-  <img src="docs/assets/overview.svg" alt="컨트롤러·서비스·저장소 인터페이스로 책임을 분리한 구조">
+  <source media="(max-width: 1000px)" srcset="docs/assets/repository-flow-mobile.svg">
+  <img src="docs/assets/repository-flow.svg" alt="Controller → Service → Repository → 기본 JDBC·H2 또는 설정으로 선택하는 Memory">
 </picture>
 
 ## 프로젝트 개요
@@ -52,17 +52,6 @@
 - 서비스는 저장소 인터페이스에 의존, 메모리·JDBC 구현 분리
 - `AppConfig`에서 사용할 구현 연결, 기본 구성은 **JDBC**
 
-```mermaid
-flowchart TD
-    C[Spring MVC Controller] --> S[Service]
-    S --> I[Repository Interface]
-    I --> J[JDBC Repository]
-    I --> M[Memory Repository]
-    J --> H[H2 Database]
-    M --> D[메모리 데이터]
-    classDef default fill:#eff6ff,stroke:#2563eb,color:#172554
-```
-
 - 설정 코드로 저장 방식 교체, 런타임 자동 전환 미지원
 
 [의존성 구성](src/main/java/com/zandhidokkie/minuet/config/AppConfig.java) · [저장소 인터페이스](src/main/java/com/zandhidokkie/minuet/repository) · [JDBC 구현](src/main/java/com/zandhidokkie/minuet/repository/jdbc)
@@ -72,13 +61,10 @@ flowchart TD
 - 특정 날짜의 기록 `LessonInfo`와 요일·시간 기준 반복 시간표 `LessonSlot` 분리
 - 두 모델에서 학생·강사 참조
 
-```mermaid
-erDiagram
-    STUDENT ||--o{ LESSON_INFO : attends
-    TEACHER ||--o{ LESSON_INFO : teaches
-    STUDENT ||--o{ LESSON_SLOT : schedules
-    TEACHER ||--o{ LESSON_SLOT : schedules
-```
+<picture>
+  <source media="(max-width: 1000px)" srcset="docs/assets/lesson-relations-mobile.svg">
+  <img src="docs/assets/lesson-relations.svg" alt="학생·강사 각각 1명에 레슨 기록·반복 시간표 0개 이상 연결">
+</picture>
 
 [도메인 모델](src/main/java/com/zandhidokkie/minuet/domain) · [DB 스키마](src/main/resources/schema.sql)
 
@@ -140,3 +126,4 @@ Minuet_project/
 - JDBC 데이터 접근·테스트 작성 연습
 
 </details>
+
