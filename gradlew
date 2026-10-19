@@ -1,4 +1,5 @@
 #!/bin/sh
+# Unix 계열 Gradle 실행 스크립트
 
 #
 # Copyright © 2015-2021 the original authors.
