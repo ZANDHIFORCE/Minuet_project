@@ -1,3 +1,4 @@
+@rem Windows Gradle 실행 스크립트
 @rem
 @rem Copyright 2015 the original author or authors.
 @rem
