@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="312" viewBox="0 0 960 312" role="img" aria-labelledby="title">
+<title id="title">Controller → Service → Repository 인터페이스. 기본 JDBC 구현은 H2에 접근하며 Memory 구현은 설정 코드로 선택 가능</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
+<g font-family="'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif">
+<rect x="1" y="1" width="958" height="310" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
+<rect x="28" y="116" width="180" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="118.0" y="153.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">Controller</text>
+<rect x="260" y="116" width="180" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="350.0" y="153.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">Service</text>
+<rect x="492" y="116" width="180" height="62" rx="12" fill="#f0fdfa" stroke="#5eead4"/>
+<text x="582.0" y="153.8" text-anchor="middle" font-size="20" fill="#0f766e" font-weight="600">Repository</text>
+<path d="M 216 147 H 252" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M 448 147 H 484" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M 680 147 H 712 V 55 H 736" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M 680 147 H 712 V 251 H 736" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)" stroke-dasharray="5 5"/>
+<rect x="744" y="24" width="180" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="834.0" y="61.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">JDBC</text>
+<rect x="744" y="220" width="180" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="834.0" y="257.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">Memory</text>
+<path d="M 834 94 V 108" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="744" y="116" width="180" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="834.0" y="153.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">H2</text>
+</g></svg>

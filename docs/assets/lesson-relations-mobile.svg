@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="300" viewBox="0 0 440 300" role="img" aria-labelledby="title">
+<title id="title">학생·강사는 각각 레슨 기록과 반복 시간표를 0개 이상 가질 수 있고 각 기록·시간표는 학생 1명과 강사 1명을 참조</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker></defs>
+<g font-family="'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif">
+<rect x="1" y="1" width="438" height="298" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
+<path d="M 112.0 94 L 112.0 196" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M 112.0 94 L 328.0 196" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M 328.0 94 L 112.0 196" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M 328.0 94 L 328.0 196" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="182" y="131" width="76" height="30" rx="6" fill="#f8fafc" stroke="#f8fafc"/>
+<text x="220" y="152" text-anchor="middle" font-size="16" fill="#334155" font-weight="600">1 : 0..N</text>
+<rect x="24" y="24" width="176" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="112.0" y="61.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">학생</text>
+<rect x="240" y="24" width="176" height="62" rx="12" fill="#fff" stroke="#cbd5e1"/>
+<text x="328.0" y="61.8" text-anchor="middle" font-size="20" fill="#334155" font-weight="600">강사</text>
+<rect x="24" y="204" width="176" height="62" rx="12" fill="#f0fdfa" stroke="#5eead4"/>
+<text x="112.0" y="241.12" text-anchor="middle" font-size="18" fill="#0f766e" font-weight="600">레슨 기록</text>
+<rect x="240" y="204" width="176" height="62" rx="12" fill="#f0fdfa" stroke="#5eead4"/>
+<text x="328.0" y="241.12" text-anchor="middle" font-size="18" fill="#0f766e" font-weight="600">반복 시간표</text>
+</g></svg>
