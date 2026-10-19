@@ -1,3 +1,4 @@
+// 학생·강사·레슨·시간표 관리
 package com.zandhidokkie.minuet;
 
 import org.springframework.boot.SpringApplication;
